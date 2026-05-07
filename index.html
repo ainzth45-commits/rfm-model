@@ -232,11 +232,19 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
 .sim-unknown-btn{width:100%;padding:14px 20px;border-radius:12px;border:2px dashed var(--accent);background:var(--accent-light);cursor:pointer;font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--accent);transition:all 0.2s var(--ease-out);margin-bottom:12px;text-align:center}
 .sim-unknown-btn:hover{background:rgba(0,113,227,0.12);border-style:solid;transform:translateY(-1px);box-shadow:var(--shadow-1)}
 .sim-unknown-btn.active{border:2px solid var(--accent);background:var(--accent);color:#fff;box-shadow:0 0 0 3px rgba(0,113,227,0.15)}
-.mini-camp-suggest{margin-top:16px;text-align:left}
-.mini-camp-suggest-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
-.mini-camp-suggest-btn{padding:8px 12px;border-radius:10px;border:1.5px solid var(--border-light);background:var(--bg-primary);cursor:pointer;font-family:var(--font-body);font-size:11px;font-weight:500;color:var(--text-secondary);transition:all 0.2s var(--ease-out);text-align:center;line-height:1.3}
-.mini-camp-suggest-btn:hover{border-color:var(--sg-color);background:var(--sg-bg);color:var(--sg-dark);transform:translateY(-1px);box-shadow:var(--shadow-1)}
-.mini-camp-suggest-btn.active{border-color:var(--sg-color);background:var(--sg-color);color:#fff;box-shadow:0 0 0 3px var(--sg-bg)}
+.mini-camp-suggest{text-align:left;margin-bottom:20px}
+.mini-camp-suggest-title{font-size:11px;font-weight:600;color:var(--text-tertiary);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em}
+.mini-camp-suggest-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mini-camp-suggest-btn{padding:10px 8px;border-radius:10px;border:1.5px solid var(--border-light);background:var(--bg-primary);cursor:pointer;font-family:var(--font-body);font-size:11px;font-weight:500;color:var(--text-secondary);transition:all 0.25s var(--ease-out);text-align:center;line-height:1.3;position:relative}
+.mini-camp-suggest-btn:hover{border-color:var(--sg-color);background:var(--sg-bg);color:var(--sg-dark);transform:translateY(-2px);box-shadow:var(--shadow-2)}
+.mini-camp-suggest-btn.active{border-color:var(--sg-color);background:var(--sg-bg);color:var(--sg-dark);font-weight:600;box-shadow:0 0 0 2.5px var(--sg-color),0 4px 12px rgba(0,0,0,0.08);transform:translateY(-2px);z-index:2}
+.mini-flow-connector{display:flex;flex-direction:column;align-items:center;margin:0 auto;position:relative}
+.mini-flow-line{width:2px;height:20px;background:var(--conn-color,var(--text-tertiary));opacity:0.4}
+.mini-flow-dot{width:8px;height:8px;border-radius:50%;background:var(--conn-color,var(--text-tertiary));box-shadow:0 0 0 3px rgba(0,0,0,0.05)}
+.mini-flow-arrow-down{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid var(--conn-color,var(--text-tertiary))}
+.mini-flow-source{padding:14px 20px;border-radius:14px;border:2px solid;text-align:center;font-size:14px;font-weight:600;line-height:1.3;max-width:240px;margin:0 auto;position:relative}
+.mini-flow-source-label{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.04em;opacity:0.8;display:block;margin-bottom:3px}
+.mini-flow-dest{padding:12px 18px;border-radius:12px;border:2px solid;text-align:center;font-size:13px;font-weight:500;line-height:1.3;max-width:200px;margin:0 auto}
 .sim-btn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .sim-btn-row{display:flex;gap:8px;flex-wrap:wrap}
 .sim-choice{padding:10px 14px;border-radius:10px;border:1.5px solid var(--border-light);background:var(--bg-primary);cursor:pointer;font-family:var(--font-body);font-size:12px;font-weight:500;color:var(--text-secondary);transition:all 0.2s var(--ease-out);text-align:center;line-height:1.35}
@@ -424,6 +432,10 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
   .sim-choice-desc{font-size:10px}
   .sim-step-group{padding:16px 18px}
   .sim-step-header span:last-child{font-size:13px}
+  .mini-camp-suggest-grid{grid-template-columns:repeat(2,1fr);gap:5px}
+  .mini-camp-suggest-btn{padding:8px 6px;font-size:10px}
+  .mini-flow-source{padding:12px 16px;font-size:13px;max-width:200px}
+  .mini-flow-dest{padding:10px 14px;font-size:12px;max-width:180px}
   .mini-source{padding:10px 16px;font-size:12px;min-width:120px}
   .mini-dest{padding:8px 12px;font-size:11px;min-width:80px}
   .mini-result-name{font-size:16px}
@@ -1455,62 +1467,77 @@ function updateMiniFlow(){
       scResult=simLogic(sc,S||'CRM',N||1,R||0,T);
     }
 
-    const campSuggestHtml=possibles.length>1&&filteredEntries.length>1?`
-      <div class="mini-camp-suggest">
-        <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">แคมเปญที่คาดว่าจะอยู่ปัจจุบัน</div>
-        <div class="mini-camp-suggest-grid">
-          ${filteredEntries.map(([ck,{camp}])=>{
-            const gc=GROUP_COLORS[camp.group],gl=GROUP_LIGHT[camp.group],gd=GROUP_DARK[camp.group];
-            const isActive=ck===sc;
-            return`<button class="mini-camp-suggest-btn ${isActive?'active':''}" onclick="selectSuggestedCampaign('${ck}')" style="--sg-color:${gc};--sg-bg:${gl};--sg-dark:${gd}">
-              <span style="font-family:var(--font-mono);font-size:9px;font-weight:700;color:${isActive?'#fff':gc}">${GROUPS[camp.group].name}</span>
-              ${camp.label}
-            </button>`;
-          }).join('')}
-        </div>
-      </div>`:'';
+    const showSuggestions=possibles.length>1&&filteredEntries.length>0;
+    const gridHtml=showSuggestions?`<div class="mini-camp-suggest">
+      <div class="mini-camp-suggest-title">แคมเปญที่คาดว่าจะอยู่ปัจจุบัน</div>
+      <div class="mini-camp-suggest-grid">
+        ${filteredEntries.map(([ck,{camp}])=>{
+          const gc=GROUP_COLORS[camp.group],gl=GROUP_LIGHT[camp.group],gd=GROUP_DARK[camp.group];
+          const isActive=ck===sc;
+          return`<button class="mini-camp-suggest-btn ${isActive?'active':''}" onclick="selectSuggestedCampaign('${ck}')" style="--sg-color:${gc};--sg-bg:${gl};--sg-dark:${gd}">
+            <span style="font-family:var(--font-mono);font-size:9px;font-weight:700;color:${gc};display:block;margin-bottom:2px">${GROUPS[camp.group].name}</span>
+            ${camp.label}
+          </button>`;
+        }).join('')}
+      </div>
+    </div>`:'';
 
     if(scValid&&scResult){
       const camp=CAMPAIGNS.find(c=>c.key===sc);
-      const sourceNode=NODES[camp.nodeId];
-      const sourceColor=GROUP_COLORS[sourceNode.group],sourceLight=GROUP_LIGHT[sourceNode.group],sourceDark=GROUP_DARK[sourceNode.group];
-      const destNode=NODES[scResult.id];
-      const dc=GROUP_COLORS[destNode.group],dl=GROUP_LIGHT[destNode.group],dd=GROUP_DARK[destNode.group];
+      const sn=NODES[camp.nodeId];
+      const sColor=GROUP_COLORS[sn.group],sLight=GROUP_LIGHT[sn.group],sDark=GROUP_DARK[sn.group];
+      const dn=NODES[scResult.id];
+      const dColor=GROUP_COLORS[dn.group],dLight=GROUP_LIGHT[dn.group],dDark=GROUP_DARK[dn.group];
       flow.innerHTML=`
-        ${campSuggestHtml}
-        <div class="mini-source" style="border-color:${sourceColor};background:${sourceLight};color:${sourceDark}">
-          <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">${GROUPS[sourceNode.group].name}</span>
-          ${sourceNode.name.replace(/\n/g,' ')}
+        ${gridHtml}
+        <div class="mini-flow-connector" style="--conn-color:${sColor}">
+          <div class="mini-flow-dot"></div>
+          <div class="mini-flow-line"></div>
         </div>
-        <div class="mini-arrow"><div class="mini-arrow-line"></div><div class="mini-arrow-head">&#9660;</div></div>
-        <div class="mini-dests">
-          <div class="mini-dest possible confirmed" style="border-color:${dc};background:${dl};color:${dd};--glow:${dc}30">
-            <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">${GROUPS[destNode.group].name}</span>
-            ${destNode.name.replace(/\n/g,' ')}
-          </div>
+        <div class="mini-flow-source" style="border-color:${sColor};background:${sLight};color:${sDark}">
+          <span class="mini-flow-source-label">${GROUPS[sn.group].name}</span>
+          ${sn.name.replace(/\n/g,' ')}
+        </div>
+        <div class="mini-flow-connector" style="--conn-color:${dColor}">
+          <div class="mini-flow-line"></div>
+          <div class="mini-flow-arrow-down"></div>
+        </div>
+        <div class="mini-flow-dest" style="border-color:${dColor};background:${dLight};color:${dDark}">
+          <span style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:0.04em;opacity:0.8;display:block;margin-bottom:2px">${GROUPS[dn.group].name}</span>
+          ${dn.name.replace(/\n/g,' ')}
         </div>
         ${renderFinalResultUnknown(scResult.id)}
       `;
+    } else if(possibles.length===1){
+      const dn=NODES[possibles[0]];
+      const dColor=GROUP_COLORS[dn.group],dLight=GROUP_LIGHT[dn.group],dDark=GROUP_DARK[dn.group];
+      flow.innerHTML=`
+        <div class="mini-flow-connector" style="--conn-color:${dColor}">
+          <div class="mini-flow-dot"></div>
+          <div class="mini-flow-line" style="height:12px"></div>
+          <div class="mini-flow-arrow-down"></div>
+        </div>
+        <div class="mini-flow-dest" style="border-color:${dColor};background:${dLight};color:${dDark};max-width:240px;padding:14px 20px;font-size:14px;font-weight:600">
+          <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.04em;opacity:0.8;display:block;margin-bottom:2px">${GROUPS[dn.group].name}</span>
+          ${dn.name.replace(/\n/g,' ')}
+        </div>
+        ${renderFinalResultUnknown(possibles[0])}
+      `;
     } else {
       flow.innerHTML=`
-        ${campSuggestHtml}
-        <div class="mini-source" style="border-color:var(--text-tertiary);background:#f5f5f7;color:var(--text-secondary)">
-          <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">ไม่ทราบ</span>
-          แคมเปญปัจจุบัน?
-        </div>
-        <div class="mini-arrow"><div class="mini-arrow-line"></div><div class="mini-arrow-head">&#9660;</div></div>
-        <div class="mini-dests">
+        ${gridHtml}
+        ${showSuggestions?'<div style="text-align:center;margin-top:12px;font-size:12px;color:var(--text-tertiary)">เลือกแคมเปญด้านบนเพื่อดูผลลัพธ์</div>':''}
+        <div class="mini-dests" style="margin-top:16px">
           ${possibles.map(id=>{
             const n=NODES[id];const g=n.group;
             const c=GROUP_COLORS[g],l=GROUP_LIGHT[g],d=GROUP_DARK[g];
-            const isConfirmed=possibles.length===1;
-            return`<div class="mini-dest possible ${isConfirmed?'confirmed':''}" style="border-color:${c};background:${l};color:${d};--glow:${c}30">
+            return`<div class="mini-dest possible" style="border-color:${c};background:${l};color:${d};--glow:${c}30">
               <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">${GROUPS[g].name}</span>
               ${n.name.replace(/\n/g,' ')}
             </div>`;
           }).join('')}
         </div>
-        ${possibles.length===1?renderFinalResultUnknown(possibles[0]):'<div style="text-align:center;margin-top:12px;font-size:12px;color:var(--text-tertiary);font-family:var(--font-mono)">'+(filteredEntries.length>1?'เลือกแคมเปญด้านบนเพื่อดูผลลัพธ์':'เลือกเพิ่มเพื่อจำกัดผลลัพธ์')+` (${possibles.length} ที่เป็นไปได้)</div>`}
+        <div style="text-align:center;margin-top:8px;font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono)">${possibles.length} แคมเปญที่เป็นไปได้</div>
       `;
     }
     return;
