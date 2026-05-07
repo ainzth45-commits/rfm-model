@@ -1461,14 +1461,8 @@ function updateMiniFlow(){
     });
     const sc=simState.suggestedCamp;
     const scValid=sc&&filteredEntries.some(([ck])=>ck===sc);
-    let scResult=null;
-    if(scValid){
-      const{S,N,R,T}=simState;
-      scResult=simLogic(sc,S||'CRM',N||1,R||0,T);
-    }
 
-    const showSuggestions=possibles.length>1&&filteredEntries.length>0;
-    const gridHtml=showSuggestions?`<div class="mini-camp-suggest">
+    const gridHtml=filteredEntries.length>0?`<div class="mini-camp-suggest">
       <div class="mini-camp-suggest-title">แคมเปญที่คาดว่าจะอยู่ปัจจุบัน</div>
       <div class="mini-camp-suggest-grid">
         ${filteredEntries.map(([ck,{camp}])=>{
@@ -1482,64 +1476,56 @@ function updateMiniFlow(){
       </div>
     </div>`:'';
 
-    if(scValid&&scResult){
+    let sourceHtml,scPossibles;
+    if(scValid){
       const camp=CAMPAIGNS.find(c=>c.key===sc);
       const sn=NODES[camp.nodeId];
       const sColor=GROUP_COLORS[sn.group],sLight=GROUP_LIGHT[sn.group],sDark=GROUP_DARK[sn.group];
-      const dn=NODES[scResult.id];
-      const dColor=GROUP_COLORS[dn.group],dLight=GROUP_LIGHT[dn.group],dDark=GROUP_DARK[dn.group];
-      flow.innerHTML=`
-        ${gridHtml}
-        <div class="mini-flow-connector" style="--conn-color:${sColor}">
-          <div class="mini-flow-dot"></div>
-          <div class="mini-flow-line"></div>
-        </div>
-        <div class="mini-flow-source" style="border-color:${sColor};background:${sLight};color:${sDark}">
-          <span class="mini-flow-source-label">${GROUPS[sn.group].name}</span>
-          ${sn.name.replace(/\n/g,' ')}
-        </div>
-        <div class="mini-flow-connector" style="--conn-color:${dColor}">
-          <div class="mini-flow-line"></div>
-          <div class="mini-flow-arrow-down"></div>
-        </div>
-        <div class="mini-flow-dest" style="border-color:${dColor};background:${dLight};color:${dDark}">
-          <span style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:0.04em;opacity:0.8;display:block;margin-bottom:2px">${GROUPS[dn.group].name}</span>
-          ${dn.name.replace(/\n/g,' ')}
-        </div>
-        ${renderFinalResultUnknown(scResult.id)}
-      `;
-    } else if(possibles.length===1){
-      const dn=NODES[possibles[0]];
-      const dColor=GROUP_COLORS[dn.group],dLight=GROUP_LIGHT[dn.group],dDark=GROUP_DARK[dn.group];
-      flow.innerHTML=`
-        <div class="mini-flow-connector" style="--conn-color:${dColor}">
-          <div class="mini-flow-dot"></div>
-          <div class="mini-flow-line" style="height:12px"></div>
-          <div class="mini-flow-arrow-down"></div>
-        </div>
-        <div class="mini-flow-dest" style="border-color:${dColor};background:${dLight};color:${dDark};max-width:240px;padding:14px 20px;font-size:14px;font-weight:600">
-          <span style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.04em;opacity:0.8;display:block;margin-bottom:2px">${GROUPS[dn.group].name}</span>
-          ${dn.name.replace(/\n/g,' ')}
-        </div>
-        ${renderFinalResultUnknown(possibles[0])}
-      `;
+      sourceHtml=`<div class="mini-source" style="border-color:${sColor};background:${sLight};color:${sDark}">
+        <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">${GROUPS[sn.group].name}</span>
+        ${sn.name.replace(/\n/g,' ')}
+      </div>`;
+      const{S,N,R,T}=simState;
+      const sVals=S?[S]:['CRM','OTHER'];const nVals=N!==null?[N]:[1,2];
+      const rEnabled=(rRulesMap[sc]||[0,1,2,3,4,5]).map(i=>R_OPTS[i].value);
+      const rVals=R!==null?[R]:rEnabled;
+      const isRel=['personal','lastchance'].includes(sc);
+      let tVals;
+      if(!isRel)tVals=[null];
+      else if(simState.TisNull===true)tVals=[null];
+      else if(simState.TisNull===false&&T!==null)tVals=[T];
+      else tVals=[null,...T_OPTS.filter(o=>!o.isNull).map(o=>o.value)];
+      const ids=new Set();
+      for(const s of sVals)for(const n of nVals)for(const r of rVals)for(const t of tVals)ids.add(simLogic(sc,s,n,r,t).id);
+      scPossibles=[...ids];
     } else {
-      flow.innerHTML=`
-        ${gridHtml}
-        ${showSuggestions?'<div style="text-align:center;margin-top:12px;font-size:12px;color:var(--text-tertiary)">เลือกแคมเปญด้านบนเพื่อดูผลลัพธ์</div>':''}
-        <div class="mini-dests" style="margin-top:16px">
-          ${possibles.map(id=>{
-            const n=NODES[id];const g=n.group;
-            const c=GROUP_COLORS[g],l=GROUP_LIGHT[g],d=GROUP_DARK[g];
-            return`<div class="mini-dest possible" style="border-color:${c};background:${l};color:${d};--glow:${c}30">
-              <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">${GROUPS[g].name}</span>
-              ${n.name.replace(/\n/g,' ')}
-            </div>`;
-          }).join('')}
-        </div>
-        <div style="text-align:center;margin-top:8px;font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono)">${possibles.length} แคมเปญที่เป็นไปได้</div>
-      `;
+      sourceHtml=`<div class="mini-source" style="border-color:var(--text-tertiary);background:#f5f5f7;color:var(--text-secondary)">
+        <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">ไม่ทราบ</span>
+        แคมเปญปัจจุบัน?
+      </div>`;
+      scPossibles=possibles;
     }
+
+    const outIds=scValid?[...new Set(CONNECTIONS.filter(c=>c.from===CAMPAIGNS.find(cc=>cc.key===sc).nodeId).map(c=>c.to))]:possibles;
+
+    flow.innerHTML=`
+      ${gridHtml}
+      ${sourceHtml}
+      <div class="mini-arrow"><div class="mini-arrow-line"></div><div class="mini-arrow-head">&#9660;</div></div>
+      <div class="mini-dests">
+        ${outIds.map(id=>{
+          const n=NODES[id];const g=n.group;
+          const c=GROUP_COLORS[g],l=GROUP_LIGHT[g],d=GROUP_DARK[g];
+          const isPossible=scPossibles.includes(id);
+          const isConfirmed=scPossibles.length===1&&isPossible;
+          return`<div class="mini-dest ${isPossible?'possible':'impossible'} ${isConfirmed?'confirmed':''}" style="border-color:${c};background:${isPossible?l:'#f5f5f5'};color:${isPossible?d:'#ccc'};--glow:${c}30">
+            <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">${GROUPS[g].name}</span>
+            ${n.name.replace(/\n/g,' ')}
+          </div>`;
+        }).join('')}
+      </div>
+      ${scPossibles.length===1?(scValid?renderFinalResult(scPossibles[0]):renderFinalResultUnknown(scPossibles[0])):'<div style="text-align:center;margin-top:16px;font-size:12px;color:var(--text-tertiary);font-family:var(--font-mono)">'+(scValid?'เลือกเพิ่มเพื่อจำกัดผลลัพธ์':'เลือกแคมเปญด้านบน หรือเลือกเพิ่มเพื่อจำกัดผลลัพธ์')+` (${scPossibles.length} ที่เป็นไปได้)</div>`}
+    `;
     return;
   }
 
@@ -1578,9 +1564,11 @@ function renderFinalResult(nodeId){
   const c=GROUP_COLORS[g],l=GROUP_LIGHT[g],d=GROUP_DARK[g];
   const grp=GROUPS[g];
   const S=simState.S||'CRM',N=simState.N||1,R=simState.R||0,T=simState.T;
-  const conn=CONNECTIONS.find(cn=>cn.from===(CAMPAIGNS.find(cc=>cc.key===simState.current)||{}).nodeId&&cn.to===nodeId&&(S==='CRM'?cn.type==='crm':cn.type==='other'||cn.type==='none'));
+  const campKey=simState.current==='unknown'?simState.suggestedCamp:simState.current;
+  const conn=CONNECTIONS.find(cn=>cn.from===(CAMPAIGNS.find(cc=>cc.key===campKey)||{}).nodeId&&cn.to===nodeId&&(S==='CRM'?cn.type==='crm':cn.type==='other'||cn.type==='none'));
+  const campLabel=campKey?(CAMPAIGNS.find(cc=>cc.key===campKey)||{}).label||campKey:'ไม่ทราบ';
   const steps=[];
-  steps.push({label:'แคมเปญปัจจุบัน',val:simState.current,pass:true});
+  steps.push({label:'แคมเปญปัจจุบัน',val:campLabel,pass:true});
   steps.push({label:'ผู้ขายล่าสุด (S)',val:S,pass:true});
   steps.push({label:'ครั้งที่สั่งซื้อ (N)',val:N===1?'ครั้งแรก':'ครั้งที่ 2+',pass:true});
   steps.push({label:'วันนับจากรับสินค้า (R)',val:R+' วัน',pass:true});
