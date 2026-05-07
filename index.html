@@ -236,6 +236,7 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
 .mini-camp-suggest-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .mini-camp-suggest-btn{padding:8px 12px;border-radius:10px;border:1.5px solid var(--border-light);background:var(--bg-primary);cursor:pointer;font-family:var(--font-body);font-size:11px;font-weight:500;color:var(--text-secondary);transition:all 0.2s var(--ease-out);text-align:center;line-height:1.3}
 .mini-camp-suggest-btn:hover{border-color:var(--sg-color);background:var(--sg-bg);color:var(--sg-dark);transform:translateY(-1px);box-shadow:var(--shadow-1)}
+.mini-camp-suggest-btn.active{border-color:var(--sg-color);background:var(--sg-color);color:#fff;box-shadow:0 0 0 3px var(--sg-bg)}
 .sim-btn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .sim-btn-row{display:flex;gap:8px;flex-wrap:wrap}
 .sim-choice{padding:10px 14px;border-radius:10px;border:1.5px solid var(--border-light);background:var(--bg-primary);cursor:pointer;font-family:var(--font-body);font-size:12px;font-weight:500;color:var(--text-secondary);transition:all 0.2s var(--ease-out);text-align:center;line-height:1.35}
@@ -1115,7 +1116,7 @@ const rRulesMap={
   newcare:[0,1,2,3],waiting:[0,1,2,3],
   cool:[0,1,2,3,4],excavate1:[0,1,2,4],excavate2:[0,1,2,5]
 };
-const simState={current:null,S:null,N:null,R:null,T:null,TisNull:null};
+const simState={current:null,S:null,N:null,R:null,T:null,TisNull:null,suggestedCamp:null};
 
 function simLogic(current,S,N,R,T){
   const isRel=['personal','lastchance'].includes(current);
@@ -1213,7 +1214,7 @@ function buildSimSteps(){
   unknownBtn.onclick=()=>{
     document.querySelectorAll('.sim-choice[data-step="1"]').forEach(b=>b.classList.remove('selected'));
     unknownBtn.classList.add('active');
-    simState.current='unknown';simState.S=simState.N=simState.R=simState.T=null;simState.TisNull=null;
+    simState.current='unknown';simState.S=simState.N=simState.R=simState.T=null;simState.TisNull=null;simState.suggestedCamp=null;
     document.querySelectorAll('.sim-choice:not([data-step="1"])').forEach(b=>{b.classList.remove('selected');b.classList.remove('disabled')});
     const s2=document.getElementById('simStep2');
     const s3=document.getElementById('simStep3');
@@ -1308,7 +1309,7 @@ function selectStep(field,value,btn,stepNum){
     simState[field]=null;
     if(field==='T')simState.TisNull=null;
     if(field==='current'){
-      simState.S=simState.N=simState.R=simState.T=null;simState.TisNull=null;
+      simState.S=simState.N=simState.R=simState.T=null;simState.TisNull=null;simState.suggestedCamp=null;
       document.querySelectorAll('.sim-choice').forEach(b=>{b.classList.remove('selected');b.classList.remove('disabled')});
       ['simStep2','simStep3','simStep4'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden')});
     }
@@ -1355,6 +1356,7 @@ function selectStep(field,value,btn,stepNum){
     }
   }
 
+  if(simState.current==='unknown')simState.suggestedCamp=null;
   updateDisabledStates();
   updateMiniFlow();
 }
@@ -1364,7 +1366,15 @@ function updateDisabledStates(){
   if(!current)return;
   if(current==='unknown'){
     document.querySelectorAll('.sim-choice[data-field="R"]').forEach(b=>b.classList.remove('disabled'));
-    document.querySelectorAll('.sim-choice[data-field="T"]').forEach(b=>b.classList.remove('disabled'));
+    const rIdx=simState.R!==null?R_OPTS.findIndex(o=>o.value===simState.R):-1;
+    const hasRelCamp=rIdx<0||rIdx<=2;
+    document.querySelectorAll('.sim-choice[data-field="T"]').forEach(b=>{
+      if(hasRelCamp)b.classList.remove('disabled');
+      else b.classList.add('disabled');
+    });
+    if(!hasRelCamp&&simState.T!==null){simState.T=null;simState.TisNull=null;
+      document.querySelectorAll('.sim-choice[data-field="T"]').forEach(b=>b.classList.remove('selected'));
+    }
     return;
   }
   const rEnabled=rRulesMap[current]||[0,1,2,3,4,5];
@@ -1408,24 +1418,12 @@ function updateDisabledStates(){
 }
 
 function selectSuggestedCampaign(campKey){
-  simState.current=campKey;
-  const ub=document.querySelector('.sim-unknown-btn');if(ub)ub.classList.remove('active');
-  document.querySelectorAll('.sim-choice[data-step="1"]').forEach(b=>{
-    if(b.dataset.key===campKey)b.classList.add('selected');
-    else b.classList.remove('selected');
-  });
-  const isRel=['personal','lastchance'].includes(campKey);
-  const s4=document.getElementById('simStep4');
-  if(isRel){s4.classList.remove('hidden')}
-  else{s4.classList.add('hidden');simState.TisNull=true;simState.T=null;
-    document.querySelectorAll('.sim-choice[data-field="T"]').forEach(b=>b.classList.remove('selected'));
-  }
-  updateDisabledStates();
+  simState.suggestedCamp=campKey;
   updateMiniFlow();
 }
 
 function resetSim(){
-  simState.current=simState.S=simState.N=simState.R=simState.T=null;simState.TisNull=null;
+  simState.current=simState.S=simState.N=simState.R=simState.T=null;simState.TisNull=null;simState.suggestedCamp=null;
   document.querySelectorAll('.sim-choice').forEach(b=>{b.classList.remove('selected');b.classList.remove('disabled')});
   const ub=document.querySelector('.sim-unknown-btn');if(ub)ub.classList.remove('active');
   ['simStep2','simStep3','simStep4'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden')});
@@ -1443,41 +1441,78 @@ function updateMiniFlow(){
 
   if(current==='unknown'){
     const campMap=getValidCampaigns();
-    const campSuggestHtml=possibles.length>1?(() => {
-      const entries=[...campMap.entries()];
-      return`<div class="mini-camp-suggest">
-        <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">แคมเปญที่คาดว่าจะอยู่ (เลือกเพื่อจำกัดผลลัพธ์)</div>
+    const hasTSelected=simState.TisNull===false&&simState.T!==null;
+    const filteredEntries=[...campMap.entries()].filter(([ck])=>{
+      const needsT=['personal','lastchance'].includes(ck);
+      if(needsT&&!hasTSelected)return false;
+      return true;
+    });
+    const sc=simState.suggestedCamp;
+    const scValid=sc&&filteredEntries.some(([ck])=>ck===sc);
+    let scResult=null;
+    if(scValid){
+      const{S,N,R,T}=simState;
+      scResult=simLogic(sc,S||'CRM',N||1,R||0,T);
+    }
+
+    const campSuggestHtml=possibles.length>1&&filteredEntries.length>1?`
+      <div class="mini-camp-suggest">
+        <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">แคมเปญที่คาดว่าจะอยู่ปัจจุบัน</div>
         <div class="mini-camp-suggest-grid">
-          ${entries.map(([ck,{camp}])=>{
+          ${filteredEntries.map(([ck,{camp}])=>{
             const gc=GROUP_COLORS[camp.group],gl=GROUP_LIGHT[camp.group],gd=GROUP_DARK[camp.group];
-            return`<button class="mini-camp-suggest-btn" onclick="selectSuggestedCampaign('${ck}')" style="--sg-color:${gc};--sg-bg:${gl};--sg-dark:${gd}">
-              <span style="font-family:var(--font-mono);font-size:9px;font-weight:700;color:${gc}">${GROUPS[camp.group].name}</span>
+            const isActive=ck===sc;
+            return`<button class="mini-camp-suggest-btn ${isActive?'active':''}" onclick="selectSuggestedCampaign('${ck}')" style="--sg-color:${gc};--sg-bg:${gl};--sg-dark:${gd}">
+              <span style="font-family:var(--font-mono);font-size:9px;font-weight:700;color:${isActive?'#fff':gc}">${GROUPS[camp.group].name}</span>
               ${camp.label}
             </button>`;
           }).join('')}
         </div>
-      </div>`;
-    })():'';
+      </div>`:'';
 
-    flow.innerHTML=`
-      <div class="mini-source" style="border-color:var(--text-tertiary);background:#f5f5f7;color:var(--text-secondary)">
-        <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">ไม่ทราบ</span>
-        แคมเปญปัจจุบัน?
-      </div>
-      <div class="mini-arrow"><div class="mini-arrow-line"></div><div class="mini-arrow-head">&#9660;</div></div>
-      <div class="mini-dests">
-        ${possibles.map(id=>{
-          const n=NODES[id];const g=n.group;
-          const c=GROUP_COLORS[g],l=GROUP_LIGHT[g],d=GROUP_DARK[g];
-          const isConfirmed=possibles.length===1;
-          return`<div class="mini-dest possible ${isConfirmed?'confirmed':''}" style="border-color:${c};background:${l};color:${d};--glow:${c}30">
-            <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">${GROUPS[g].name}</span>
-            ${n.name.replace(/\n/g,' ')}
-          </div>`;
-        }).join('')}
-      </div>
-      ${possibles.length===1?renderFinalResultUnknown(possibles[0]):campSuggestHtml}
-    `;
+    if(scValid&&scResult){
+      const camp=CAMPAIGNS.find(c=>c.key===sc);
+      const sourceNode=NODES[camp.nodeId];
+      const sourceColor=GROUP_COLORS[sourceNode.group],sourceLight=GROUP_LIGHT[sourceNode.group],sourceDark=GROUP_DARK[sourceNode.group];
+      const destNode=NODES[scResult.id];
+      const dc=GROUP_COLORS[destNode.group],dl=GROUP_LIGHT[destNode.group],dd=GROUP_DARK[destNode.group];
+      flow.innerHTML=`
+        ${campSuggestHtml}
+        <div class="mini-source" style="border-color:${sourceColor};background:${sourceLight};color:${sourceDark}">
+          <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">${GROUPS[sourceNode.group].name}</span>
+          ${sourceNode.name.replace(/\n/g,' ')}
+        </div>
+        <div class="mini-arrow"><div class="mini-arrow-line"></div><div class="mini-arrow-head">&#9660;</div></div>
+        <div class="mini-dests">
+          <div class="mini-dest possible confirmed" style="border-color:${dc};background:${dl};color:${dd};--glow:${dc}30">
+            <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">${GROUPS[destNode.group].name}</span>
+            ${destNode.name.replace(/\n/g,' ')}
+          </div>
+        </div>
+        ${renderFinalResultUnknown(scResult.id)}
+      `;
+    } else {
+      flow.innerHTML=`
+        ${campSuggestHtml}
+        <div class="mini-source" style="border-color:var(--text-tertiary);background:#f5f5f7;color:var(--text-secondary)">
+          <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">ไม่ทราบ</span>
+          แคมเปญปัจจุบัน?
+        </div>
+        <div class="mini-arrow"><div class="mini-arrow-line"></div><div class="mini-arrow-head">&#9660;</div></div>
+        <div class="mini-dests">
+          ${possibles.map(id=>{
+            const n=NODES[id];const g=n.group;
+            const c=GROUP_COLORS[g],l=GROUP_LIGHT[g],d=GROUP_DARK[g];
+            const isConfirmed=possibles.length===1;
+            return`<div class="mini-dest possible ${isConfirmed?'confirmed':''}" style="border-color:${c};background:${l};color:${d};--glow:${c}30">
+              <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">${GROUPS[g].name}</span>
+              ${n.name.replace(/\n/g,' ')}
+            </div>`;
+          }).join('')}
+        </div>
+        ${possibles.length===1?renderFinalResultUnknown(possibles[0]):'<div style="text-align:center;margin-top:12px;font-size:12px;color:var(--text-tertiary);font-family:var(--font-mono)">'+(filteredEntries.length>1?'เลือกแคมเปญด้านบนเพื่อดูผลลัพธ์':'เลือกเพิ่มเพื่อจำกัดผลลัพธ์')+` (${possibles.length} ที่เป็นไปได้)</div>`}
+      `;
+    }
     return;
   }
 
