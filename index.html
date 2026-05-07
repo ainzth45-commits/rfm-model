@@ -1124,8 +1124,8 @@ const T_OPTS=[
 ];
 
 const rRulesMap={
-  raw:[0],new:[0],personal:[0,1],lastchance:[0,1],
-  newcare:[0,1,2],waiting:[0,1,2],
+  raw:[0],new:[0,1],personal:[0,1,2],lastchance:[0,1,2],
+  newcare:[0,1,2,3],waiting:[0,1,2,3],
   notbad:[0,3,4],excavate1:[0,4],excavate2:[0,5]
 };
 const simState={current:null,S:null,N:null,R:null,T:null,TisNull:null,suggestedCamp:null};
@@ -1379,7 +1379,7 @@ function updateDisabledStates(){
   if(current==='unknown'){
     document.querySelectorAll('.sim-choice[data-field="R"]').forEach(b=>b.classList.remove('disabled'));
     const rIdx=simState.R!==null?R_OPTS.findIndex(o=>o.value===simState.R):-1;
-    const hasRelCamp=rIdx<0||rIdx<=1;
+    const hasRelCamp=rIdx<0||rIdx<=2;
     document.querySelectorAll('.sim-choice[data-field="T"]').forEach(b=>{
       if(hasRelCamp)b.classList.remove('disabled');
       else b.classList.add('disabled');
@@ -1571,8 +1571,12 @@ function renderFinalResult(nodeId){
   steps.push({label:'แคมเปญปัจจุบัน',val:campLabel,pass:true});
   steps.push({label:'ผู้ขายล่าสุด (S)',val:S,pass:true});
   steps.push({label:'ครั้งที่สั่งซื้อ (N)',val:N===1?'ครั้งแรก':'ครั้งที่ 2+',pass:true});
-  steps.push({label:'วันนับจากรับสินค้า (R)',val:R+' วัน',pass:true});
-  if(T!==null&&T!==undefined)steps.push({label:'วันในกลุ่ม Relationship (T)',val:T+' วัน',pass:true});
+  const rOpt=R_OPTS.find(o=>o.value===R);
+  const rDisplay=rOpt?(rOpt.label.startsWith('≤')?'ไม่เกิน '+rOpt.label.slice(1)+' วัน':rOpt.label.includes('+')?'มากกว่า '+rOpt.label.replace('+','')+' วัน':'ช่วง '+rOpt.label+' วัน'):(R+' วัน');
+  steps.push({label:'วันนับจากรับสินค้า (R)',val:rDisplay,pass:true});
+  const tOpt=T!==null&&T!==undefined?T_OPTS.find(o=>o.value===T):null;
+  const tDisplay=tOpt?(tOpt.label.startsWith('≤')?'ไม่เกิน '+tOpt.label.slice(1)+' วัน':tOpt.label.startsWith('>')?'มากกว่า '+tOpt.label.slice(1)+' วัน':'ช่วง '+tOpt.label+' วัน'):null;
+  if(tDisplay)steps.push({label:'วันในกลุ่ม Relationship (T)',val:tDisplay,pass:true});
   else steps.push({label:'วันในกลุ่ม Relationship (T)',val:'ไม่มี (ไม่เคยอยู่กลุ่มนี้)',pass:true});
   const changeInfo=conn?conn.info:'';
   return`<div class="mini-result-card" style="background:${l};border:2px solid ${c}25">
