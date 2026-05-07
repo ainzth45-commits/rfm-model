@@ -3,15 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Campaign Phase 1 — Campaign Flowchart</title>
+<title>Campaign Flowchart — Phase 1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <style>
-@property --border-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
 :root {
   --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", "Leelawadee UI", system-ui, sans-serif;
   --font-body: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", "Leelawadee UI", system-ui, sans-serif;
@@ -1207,7 +1202,7 @@ function getPossibleResults(){
     const rIdx=R!==null?R_OPTS.findIndex(o=>o.value===R):-1;
     let tEnabled;
     if(current==='personal')tEnabled=(rIdx===2)?[2]:[1,2];
-    else tEnabled=[1,2,3];
+    else tEnabled=[2,3];
     tVals=tEnabled.map(i=>T_OPTS[i].value);
   }
   const ids=new Set();
@@ -1410,7 +1405,7 @@ function updateDisabledStates(){
     if(current==='personal'){
       tEnabled=(rIdx===2)?[2]:[1,2]; // R=61-180: only 61-90. Otherwise: ≤60 + 61-90
     }else{
-      tEnabled=[1,2,3]; // lastchance: ≤60, 61-90, >90
+      tEnabled=[2,3]; // lastchance: 61-90, >90 (T≤60 resets to personal)
     }
     const tBtns=document.querySelectorAll('.sim-choice[data-field="T"]');
     tBtns.forEach(btn=>{
@@ -1604,8 +1599,12 @@ function renderFinalResultUnknown(nodeId){
   steps.push({label:'แคมเปญปัจจุบัน',val:'ไม่ทราบ'});
   steps.push({label:'ผู้ขายล่าสุด (S)',val:S});
   steps.push({label:'ครั้งที่สั่งซื้อ (N)',val:N===1?'ครั้งแรก':N===2?'ครั้งที่ 2+':'—'});
-  steps.push({label:'วันนับจากรับสินค้า (R)',val:R!==null?R+' วัน':'—'});
-  if(T!==null&&T!==undefined)steps.push({label:'วันในกลุ่ม Relationship (T)',val:T+' วัน'});
+  const rOpt2=R!==null?R_OPTS.find(o=>o.value===R):null;
+  const rDisplay2=rOpt2?(rOpt2.label.startsWith('≤')?'ไม่เกิน '+rOpt2.label.slice(1)+' วัน':rOpt2.label.includes('+')?'มากกว่า '+rOpt2.label.replace('+','')+' วัน':'ช่วง '+rOpt2.label+' วัน'):'—';
+  steps.push({label:'วันนับจากรับสินค้า (R)',val:rDisplay2});
+  const tOpt2=T!==null&&T!==undefined?T_OPTS.find(o=>o.value===T):null;
+  const tDisplay2=tOpt2?(tOpt2.label.startsWith('≤')?'ไม่เกิน '+tOpt2.label.slice(1)+' วัน':tOpt2.label.startsWith('>')?'มากกว่า '+tOpt2.label.slice(1)+' วัน':'ช่วง '+tOpt2.label+' วัน'):null;
+  if(tDisplay2)steps.push({label:'วันในกลุ่ม Relationship (T)',val:tDisplay2});
   else steps.push({label:'วันในกลุ่ม Relationship (T)',val:'ไม่มี'});
   return`<div class="mini-result-card" style="background:${l};border:2px solid ${c}25">
     <div class="mini-result-label" style="color:${d}">${grp.label} — ${grp.name}</div>
