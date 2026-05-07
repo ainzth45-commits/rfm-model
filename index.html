@@ -229,9 +229,13 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
 .sim-step-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .sim-step-num{font-family:var(--font-mono);font-size:11px;font-weight:700;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center}
 .sim-step-header span:last-child{font-family:var(--font-display);font-size:14px;font-weight:600;letter-spacing:-0.01em}
-.sim-unknown-btn{margin-left:auto;padding:4px 16px;border-radius:20px;border:1px solid var(--border-light);background:transparent;cursor:pointer;font-family:var(--font-body);font-size:11px;font-weight:400;color:var(--text-tertiary);transition:all 0.2s var(--ease-out);white-space:nowrap}
-.sim-unknown-btn:hover{border-color:var(--text-tertiary);color:var(--text-secondary);background:var(--bg-secondary)}
-.sim-unknown-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-light);font-weight:500}
+.sim-unknown-btn{width:100%;padding:14px 20px;border-radius:12px;border:2px dashed var(--accent);background:var(--accent-light);cursor:pointer;font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--accent);transition:all 0.2s var(--ease-out);margin-bottom:12px;text-align:center}
+.sim-unknown-btn:hover{background:rgba(0,113,227,0.12);border-style:solid;transform:translateY(-1px);box-shadow:var(--shadow-1)}
+.sim-unknown-btn.active{border:2px solid var(--accent);background:var(--accent);color:#fff;box-shadow:0 0 0 3px rgba(0,113,227,0.15)}
+.mini-camp-suggest{margin-top:16px;text-align:left}
+.mini-camp-suggest-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.mini-camp-suggest-btn{padding:8px 12px;border-radius:10px;border:1.5px solid var(--border-light);background:var(--bg-primary);cursor:pointer;font-family:var(--font-body);font-size:11px;font-weight:500;color:var(--text-secondary);transition:all 0.2s var(--ease-out);text-align:center;line-height:1.3}
+.mini-camp-suggest-btn:hover{border-color:var(--sg-color);background:var(--sg-bg);color:var(--sg-dark);transform:translateY(-1px);box-shadow:var(--shadow-1)}
 .sim-btn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .sim-btn-row{display:flex;gap:8px;flex-wrap:wrap}
 .sim-choice{padding:10px 14px;border-radius:10px;border:1.5px solid var(--border-light);background:var(--bg-primary);cursor:pointer;font-family:var(--font-body);font-size:12px;font-weight:500;color:var(--text-secondary);transition:all 0.2s var(--ease-out);text-align:center;line-height:1.35}
@@ -347,7 +351,7 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
   .nav-links{display:none}
   .nav-hamburger{display:flex}
   .pw-gate{padding:env(safe-area-inset-top) 20px env(safe-area-inset-bottom)}
-  .hero{min-height:85vh;padding:80px 24px 56px}
+  .hero{min-height:100svh;min-height:100vh;padding:80px 24px 56px;box-sizing:border-box}
   .hero-title{font-size:40px}
   .hero-subtitle{font-size:16px;margin-top:16px;max-width:320px}
   .hero-meta{gap:24px;margin-top:32px}
@@ -361,7 +365,7 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
   .overview{padding:28px 0 48px;overflow:hidden;position:relative}
   .slide-viewport{overflow:hidden !important;position:relative}
   .slide-track{align-items:flex-start}
-  .slide{padding:0 20px;width:100vw;min-width:100vw;max-width:100vw;flex-shrink:0;overflow:hidden;box-sizing:border-box}
+  .slide{padding:0 20px 24px;width:100vw;min-width:100vw;max-width:100vw;flex-shrink:0;overflow:visible;box-sizing:border-box}
   .slide-dots{display:none}
   .slide-arrows{display:none}
   .slide-tabs{padding:0 16px;gap:8px;margin-bottom:14px;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;-webkit-overflow-scrolling:touch;scrollbar-width:none;height:auto;visibility:visible}
@@ -1135,6 +1139,28 @@ function simLogic(current,S,N,R,T){
   return result;
 }
 
+function getValidCampaigns(){
+  const{S,N,R,T,TisNull}=simState;
+  if(simState.current!=='unknown')return[];
+  const sVals=S?[S]:['CRM','OTHER'];
+  const nVals=N!==null?[N]:[1,2];
+  const rIdx=R!==null?R_OPTS.findIndex(o=>o.value===R):-1;
+  const tAll=TisNull===true?[null]:TisNull===false&&T!==null?[T]:[null,...T_OPTS.filter(o=>!o.isNull).map(o=>o.value)];
+  const campMap=new Map();
+  for(const camp of CAMPAIGNS){
+    const ck=camp.key;
+    const rEnabled=rRulesMap[ck]||[0,1,2,3,4,5];
+    if(R!==null&&!rEnabled.includes(rIdx))continue;
+    const rVals=R!==null?[R]:rEnabled.map(i=>R_OPTS[i].value);
+    const isRel=['personal','lastchance'].includes(ck);
+    const tVals=isRel?tAll:[null];
+    const nodeIds=new Set();
+    for(const s of sVals)for(const n of nVals)for(const r of rVals)for(const t of tVals)nodeIds.add(simLogic(ck,s,n,r,t).id);
+    campMap.set(ck,{camp,nodeIds:[...nodeIds]});
+  }
+  return campMap;
+}
+
 function getPossibleResults(){
   const{current,S,N,R,T,TisNull}=simState;
   if(!current)return[];
@@ -1200,7 +1226,7 @@ function buildSimSteps(){
     }
     updateDisabledStates();updateMiniFlow();
   };
-  s1.querySelector('.sim-step-header').appendChild(unknownBtn);
+  s1.appendChild(unknownBtn);
   const g1=document.createElement('div');g1.className='sim-btn-grid';
   CAMPAIGNS.forEach(c=>{
     const btn=document.createElement('button');
@@ -1381,6 +1407,23 @@ function updateDisabledStates(){
   // S and N: always all enabled
 }
 
+function selectSuggestedCampaign(campKey){
+  simState.current=campKey;
+  const ub=document.querySelector('.sim-unknown-btn');if(ub)ub.classList.remove('active');
+  document.querySelectorAll('.sim-choice[data-step="1"]').forEach(b=>{
+    if(b.dataset.key===campKey)b.classList.add('selected');
+    else b.classList.remove('selected');
+  });
+  const isRel=['personal','lastchance'].includes(campKey);
+  const s4=document.getElementById('simStep4');
+  if(isRel){s4.classList.remove('hidden')}
+  else{s4.classList.add('hidden');simState.TisNull=true;simState.T=null;
+    document.querySelectorAll('.sim-choice[data-field="T"]').forEach(b=>b.classList.remove('selected'));
+  }
+  updateDisabledStates();
+  updateMiniFlow();
+}
+
 function resetSim(){
   simState.current=simState.S=simState.N=simState.R=simState.T=null;simState.TisNull=null;
   document.querySelectorAll('.sim-choice').forEach(b=>{b.classList.remove('selected');b.classList.remove('disabled')});
@@ -1399,7 +1442,23 @@ function updateMiniFlow(){
   const possibles=getPossibleResults();
 
   if(current==='unknown'){
-    const allNodeIds=[...new Set(NODES.map((_,i)=>i))].filter(i=>possibles.includes(i)||NODES[i]);
+    const campMap=getValidCampaigns();
+    const campSuggestHtml=possibles.length>1?(() => {
+      const entries=[...campMap.entries()];
+      return`<div class="mini-camp-suggest">
+        <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">แคมเปญที่คาดว่าจะอยู่ (เลือกเพื่อจำกัดผลลัพธ์)</div>
+        <div class="mini-camp-suggest-grid">
+          ${entries.map(([ck,{camp}])=>{
+            const gc=GROUP_COLORS[camp.group],gl=GROUP_LIGHT[camp.group],gd=GROUP_DARK[camp.group];
+            return`<button class="mini-camp-suggest-btn" onclick="selectSuggestedCampaign('${ck}')" style="--sg-color:${gc};--sg-bg:${gl};--sg-dark:${gd}">
+              <span style="font-family:var(--font-mono);font-size:9px;font-weight:700;color:${gc}">${GROUPS[camp.group].name}</span>
+              ${camp.label}
+            </button>`;
+          }).join('')}
+        </div>
+      </div>`;
+    })():'';
+
     flow.innerHTML=`
       <div class="mini-source" style="border-color:var(--text-tertiary);background:#f5f5f7;color:var(--text-secondary)">
         <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">ไม่ทราบ</span>
@@ -1417,7 +1476,7 @@ function updateMiniFlow(){
           </div>`;
         }).join('')}
       </div>
-      ${possibles.length===1?renderFinalResultUnknown(possibles[0]):'<div style="text-align:center;margin-top:16px;font-size:12px;color:var(--text-tertiary);font-family:var(--font-mono)">เลือกเพิ่มเพื่อจำกัดผลลัพธ์ (${possibles.length} แคมเปญที่เป็นไปได้)</div>'}
+      ${possibles.length===1?renderFinalResultUnknown(possibles[0]):campSuggestHtml}
     `;
     return;
   }
