@@ -301,7 +301,7 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
 .pw-gate-title{font-family:var(--font-display);font-size:28px;font-weight:700;background:linear-gradient(135deg,#ffffff 0%,#a8c8f0 40%,#6eaaef 60%,#ffffff 100%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 8s ease-in-out infinite;margin-bottom:8px}
 .pw-gate-sub{font-size:14px;color:rgba(255,255,255,0.4);margin-bottom:32px;font-family:var(--font-body)}
 .pw-input-wrap{position:relative;margin-bottom:16px}
-.pw-input{width:100%;padding:14px 20px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:#fff;font-family:var(--font-mono);font-size:16px;letter-spacing:0.15em;text-align:center;outline:none;transition:border-color 0.3s,box-shadow 0.3s;-webkit-appearance:none}
+.pw-input{width:100%;padding:14px 20px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:#fff;font-family:var(--font-mono);font-size:16px;letter-spacing:0.15em;text-align:center;outline:none;transition:border-color 0.3s,box-shadow 0.3s;-webkit-appearance:none;appearance:none}
 .pw-input:focus{border-color:rgba(0,113,227,0.5);box-shadow:0 0 0 3px rgba(0,113,227,0.15)}
 .pw-input::placeholder{color:rgba(255,255,255,0.2);letter-spacing:0.05em}
 .pw-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-family:var(--font-display);font-size:15px;font-weight:600;cursor:pointer;transition:background 0.2s,transform 0.15s}
@@ -311,8 +311,10 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
 .pw-error.show{opacity:1}
 .pw-attempts{font-size:11px;color:rgba(255,255,255,0.2);margin-top:8px;font-family:var(--font-mono)}
 
-/* ===== FLOWCHART SCROLL HINT ===== */
+/* ===== FLOWCHART SCROLL HINT & VIEWPORT ===== */
 .flowchart-scroll-hint{display:none;text-align:center;font-size:12px;color:var(--text-tertiary);margin-bottom:12px;font-family:var(--font-mono);letter-spacing:0.02em}
+.flowchart-viewport{position:relative}
+.flowchart-zoom-controls{display:none}
 
 /* ===== RESPONSIVE — Tablet (<=1024px) ===== */
 @media(max-width:1024px){
@@ -336,9 +338,12 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
 
 /* ===== RESPONSIVE — Mobile (<=768px) ===== */
 @media(max-width:768px){
-  .nav{padding:0 20px;grid-template-columns:1fr auto}
+  .nav{padding:0 20px;grid-template-columns:1fr auto 1fr}
+  .nav-brand{grid-column:1/-1;grid-row:1;justify-self:center}
+  .nav-hamburger{grid-column:3;grid-row:1;justify-self:end}
   .nav-links{display:none}
   .nav-hamburger{display:flex}
+  .pw-gate{padding:env(safe-area-inset-top) 20px env(safe-area-inset-bottom)}
   .hero{min-height:85vh;padding:80px 24px 56px}
   .hero-title{font-size:40px}
   .hero-subtitle{font-size:16px;margin-top:16px;max-width:320px}
@@ -347,17 +352,21 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
   .hero-stat-label{font-size:10px}
   .hero-glow{width:350px;height:350px}
   .scroll-indicator{bottom:24px}
-  .section-title{font-size:28px;margin-bottom:8px}
-  .section-subtitle{font-size:14px;margin-bottom:32px;padding:0 8px}
-  .overview{padding:32px 0 64px}
-  .slide{padding:0 20px}
-  .slide-tabs{padding:0 16px;gap:12px;height:20px;margin-bottom:12px;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .section-title{font-size:26px;margin-bottom:6px;padding:0 !important}
+  .section-subtitle{font-size:13px;margin-bottom:24px;padding:0 12px !important;line-height:1.6;overflow-wrap:break-word;word-break:break-word}
+  html{overflow-x:hidden}
+  .overview{padding:28px 0 48px;overflow:hidden;position:relative}
+  .slide-viewport{overflow:hidden !important;position:relative}
+  .slide-track{align-items:flex-start}
+  .slide{padding:0 20px;width:100vw;min-width:100vw;max-width:100vw;flex-shrink:0;overflow:hidden;box-sizing:border-box}
+  .slide-dots{display:none}
+  .slide-arrows{display:none}
+  .slide-tabs{padding:0 16px;gap:8px;margin-bottom:14px;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;-webkit-overflow-scrolling:touch;scrollbar-width:none;height:auto;visibility:visible}
   .slide-tabs::-webkit-scrollbar{display:none}
-  .slide-tab{font-size:12px}
-  .slide-arrows{left:8px;right:8px}
+  .slide-tab{font-size:12px;padding:8px 14px;border-radius:20px;min-height:36px;display:flex;align-items:center;background:rgba(0,0,0,0.04);color:var(--text-tertiary)}
+  .slide-tab.active{background:#fff;color:var(--text-primary);font-weight:600;box-shadow:var(--shadow-1)}
   .slide-arrow{width:32px;height:32px}
   .slide-arrow svg{width:14px;height:14px}
-  .slide-dots{bottom:8px}
   .slide-dot{width:6px;height:6px}
   .group-grid{grid-template-columns:1fr;gap:12px;max-width:100%}
   .group-card{padding:18px 20px}
@@ -365,7 +374,7 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
   .group-card-title{font-size:15px}
   .group-card-desc{font-size:12px;margin-bottom:10px}
   .campaign-tag{font-size:12px}
-  .camp-detail{margin-top:24px}
+  .camp-detail{margin-top:24px;overflow:hidden;max-width:100%}
   .camp-detail-header{flex-wrap:wrap;gap:12px;padding-bottom:16px}
   .camp-detail-dot{width:14px;height:14px}
   .camp-detail-name{font-size:22px}
@@ -375,28 +384,35 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
   .camp-detail-section-title{font-size:12px;margin-bottom:12px}
   .camp-condition{font-size:14px;gap:10px}
   .camp-condition-icon{width:20px;height:20px;font-size:11px}
-  .camp-path{font-size:12px;padding:8px 14px}
-  .flowchart-section{padding:48px 0 40px;overflow:visible}
-  .flowchart-scroll-hint{display:block}
-  .flowchart-container{width:1300px;height:1080px;transform:none;margin-bottom:0;overflow:visible}
+  .camp-detail-paths{flex-direction:column;gap:8px}
+  .camp-path{font-size:12px;padding:10px 16px;white-space:normal;word-break:break-word}
+  .flowchart-section{padding:32px 0 24px;overflow:hidden}
+  .flowchart-scroll-hint{display:block;margin-bottom:4px}
   .flowchart-section .section-title,.flowchart-section .section-subtitle{padding:0 20px}
-  .flowchart-section{overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch}
+  .flowchart-viewport{position:relative;width:100%;height:450px;overflow:hidden;touch-action:none;background:linear-gradient(180deg,#FAFBFE 0%,#fff 100%);border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle)}
+  .flowchart-container{width:1300px;height:1080px;transform-origin:0 0;position:absolute;top:0;left:0;margin-bottom:0;overflow:visible}
+  .flowchart-zoom-controls{position:absolute;bottom:12px;right:12px;display:flex;flex-direction:column;gap:4px;z-index:30}
+  .flowchart-zoom-btn{width:36px;height:36px;border-radius:10px;border:1px solid rgba(0,0,0,0.08);background:rgba(255,255,255,0.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;font-weight:600;color:var(--text-secondary);box-shadow:var(--shadow-1);transition:all 0.15s}
+  .flowchart-zoom-btn:active{transform:scale(0.92);background:#fff}
+  .flowchart-zoom-level{text-align:center;font-family:var(--font-mono);font-size:9px;color:var(--text-tertiary);padding:2px 0}
   .spotlight-info{font-size:11px;padding:8px 16px;margin:0 12px 12px;white-space:normal;text-align:center;position:sticky;top:54px;z-index:35}
-  .popup-card{max-width:100%;width:94%;padding:24px 20px;border-radius:16px;max-height:85vh;overflow-y:auto}
+  .popup-overlay{align-items:flex-end}
+  .popup-card{max-width:100%;width:100%;padding:24px 20px 32px;border-radius:20px 20px 0 0;max-height:80vh;overflow-y:auto;box-shadow:0 -8px 32px rgba(0,0,0,0.1)}
+  .popup-card::before{content:'';display:block;width:36px;height:4px;background:rgba(0,0,0,0.15);border-radius:2px;margin:0 auto 16px}
   .popup-title{font-size:20px}
   .popup-desc{font-size:14px}
   .popup-conditions{padding:12px 16px}
   .popup-cond-text{font-size:13px}
   .popup-trans-row{padding:6px 10px;flex-wrap:wrap;gap:6px}
-  .popup-trans-label{font-size:10px;min-width:60px}
+  .popup-trans-label{font-size:10px;min-width:55px}
   .popup-trans-dest{font-size:12px}
   .popup-trans-info{font-size:9px;margin-left:0;width:100%}
-  .simulator-section{padding:48px 20px}
-  .sim-container{grid-template-columns:1fr;gap:20px}
-  .sim-flow-panel{min-height:300px}
-  .sim-btn-grid{grid-template-columns:repeat(3,1fr);gap:6px}
-  .sim-choice{padding:8px 10px;font-size:11px}
-  .sim-choice-label{font-size:9px}
+  .simulator-section{padding:32px 20px 48px}
+  .sim-container{grid-template-columns:1fr;gap:16px}
+  .sim-flow-panel{min-height:240px}
+  .sim-btn-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .sim-choice{padding:12px 10px;font-size:12px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .sim-choice-label{font-size:10px}
   .sim-choice-desc{font-size:10px}
   .sim-step-group{padding:16px 18px}
   .sim-step-header span:last-child{font-size:13px}
@@ -406,7 +422,7 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
   .mini-result-info{font-size:10px}
   .mini-result-steps{padding:10px 12px}
   .mini-step-row{font-size:11px}
-  .footer{padding:24px 20px;font-size:11px}
+  .footer{padding:24px 20px;font-size:10px}
 }
 
 /* ===== RESPONSIVE — Small Mobile (<=480px) ===== */
@@ -494,11 +510,19 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
 <section class="flowchart-section" id="flowchart">
   <h2 class="section-title">State Machine</h2>
   <p class="section-subtitle">คลิกที่ node เพื่อดูรายละเอียด หรือกดปุ่มเส้นทางเพื่อดูการเชื่อมต่อ</p>
-  <div class="flowchart-scroll-hint">&#8592; เลื่อนซ้าย-ขวาเพื่อดูทั้งหมด &#8594;</div>
+  <div class="flowchart-scroll-hint">บีบ/ขยายเพื่อซูม ลากเพื่อเลื่อนดู</div>
   <div class="spotlight-info" id="spotlightInfo"></div>
-  <div class="flowchart-container" id="flowchartContainer">
-    <div class="flowchart-overlay" id="flowchartOverlay"></div>
-    <svg class="flowchart-svg" id="flowchartSvg"></svg>
+  <div class="flowchart-viewport" id="flowchartViewport">
+    <div class="flowchart-container" id="flowchartContainer">
+      <div class="flowchart-overlay" id="flowchartOverlay"></div>
+      <svg class="flowchart-svg" id="flowchartSvg"></svg>
+    </div>
+    <div class="flowchart-zoom-controls" id="flowchartZoomControls">
+      <button class="flowchart-zoom-btn" onclick="fcZoom(1)">+</button>
+      <div class="flowchart-zoom-level" id="fcZoomLevel">100%</div>
+      <button class="flowchart-zoom-btn" onclick="fcZoom(-1)">&minus;</button>
+      <button class="flowchart-zoom-btn" onclick="fcReset()" style="font-size:12px;margin-top:4px">&#8634;</button>
+    </div>
   </div>
 </section>
 
@@ -806,6 +830,7 @@ function slideToIdx(idx){
   const track=document.getElementById('slideTrack');
   track.style.transform=`translateX(-${currentSlide*100}%)`;
   updateSlideUI();
+  updateSlideHeight();
 }
 
 function slideGo(dir){slideToIdx(currentSlide+dir)}
@@ -816,6 +841,16 @@ function updateSlideUI(){
   document.getElementById('slideLeft').classList.toggle('hidden',currentSlide===0);
   document.getElementById('slideRight').classList.toggle('hidden',currentSlide===TOTAL_SLIDES-1);
   document.getElementById('slideTabs').classList.toggle('visible',currentSlide>0);
+}
+
+function updateSlideHeight(){
+  if(window.innerWidth>768)return;
+  const vp=document.getElementById('slideViewport');
+  const slides=document.querySelectorAll('.slide');
+  if(!vp||!slides[currentSlide])return;
+  const h=slides[currentSlide].scrollHeight;
+  vp.style.height=h+'px';
+  vp.style.transition='height 0.3s ease';
 }
 
 // ==================== FLOWCHART ====================
@@ -1375,6 +1410,91 @@ function renderFinalResult(nodeId){
   </div>`;
 }
 
+// ==================== MOBILE PAN-ZOOM FLOWCHART ====================
+let fcScale=0.3,fcX=0,fcY=0,fcIsMobile=false;
+const FC_MIN=0.2,FC_MAX=1.0;
+function initMobilePanZoom(){
+  if(window.innerWidth>768)return;
+  fcIsMobile=true;
+  const vp=document.getElementById('flowchartViewport');
+  const ct=document.getElementById('flowchartContainer');
+  if(!vp||!ct)return;
+  vp.style.display='block';
+  document.getElementById('flowchartZoomControls').style.display='flex';
+  // fit flowchart to viewport width
+  fcScale=vp.clientWidth/1300;
+  fcX=0;fcY=0;
+  applyFcTransform();
+  let startDist=0,startScale=0,startX=0,startY=0,startFcX=0,startFcY=0,isPinch=false;
+  vp.addEventListener('touchstart',function(e){
+    if(e.touches.length===2){
+      isPinch=true;
+      startDist=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);
+      startScale=fcScale;
+    }else if(e.touches.length===1){
+      isPinch=false;
+      startX=e.touches[0].clientX;startY=e.touches[0].clientY;
+      startFcX=fcX;startFcY=fcY;
+    }
+  },{passive:true});
+  vp.addEventListener('touchmove',function(e){
+    e.preventDefault();
+    if(e.touches.length===2&&isPinch){
+      const dist=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);
+      fcScale=Math.min(FC_MAX,Math.max(FC_MIN,startScale*(dist/startDist)));
+      clampFcPosition();
+      applyFcTransform();
+    }else if(e.touches.length===1&&!isPinch){
+      const dx=e.touches[0].clientX-startX;
+      const dy=e.touches[0].clientY-startY;
+      fcX=startFcX+dx;fcY=startFcY+dy;
+      clampFcPosition();
+      applyFcTransform();
+    }
+  },{passive:false});
+  vp.addEventListener('touchend',function(){isPinch=false},{passive:true});
+}
+function clampFcPosition(){
+  const vp=document.getElementById('flowchartViewport');
+  if(!vp)return;
+  const vw=vp.clientWidth,vh=vp.clientHeight;
+  const cw=1300*fcScale,ch=1080*fcScale;
+  const minX=Math.min(0,vw-cw),minY=Math.min(0,vh-ch);
+  fcX=Math.max(minX,Math.min(0,fcX));
+  fcY=Math.max(minY,Math.min(0,fcY));
+}
+function applyFcTransform(){
+  const ct=document.getElementById('flowchartContainer');
+  if(!ct)return;
+  ct.style.transform=`translate(${fcX}px,${fcY}px) scale(${fcScale})`;
+  const lbl=document.getElementById('fcZoomLevel');
+  if(lbl)lbl.textContent=Math.round(fcScale*100)+'%';
+}
+function fcZoom(dir){
+  const step=0.08;
+  fcScale=Math.min(FC_MAX,Math.max(FC_MIN,fcScale+dir*step));
+  clampFcPosition();
+  applyFcTransform();
+}
+function fcReset(){
+  const vp=document.getElementById('flowchartViewport');
+  if(!vp)return;
+  fcScale=vp.clientWidth/1300;
+  fcX=0;fcY=0;
+  applyFcTransform();
+}
+window.addEventListener('resize',function(){
+  if(window.innerWidth<=768&&!fcIsMobile)initMobilePanZoom();
+  if(window.innerWidth>768&&fcIsMobile){
+    fcIsMobile=false;
+    const ct=document.getElementById('flowchartContainer');
+    if(ct)ct.style.transform='';
+  }
+  const svp=document.getElementById('slideViewport');
+  if(window.innerWidth<=768){updateSlideHeight();}
+  else if(svp){svp.style.height='';}
+});
+
 // ==================== GSAP ANIMATIONS ====================
 function initGSAP(){
   if(typeof gsap==='undefined')return;
@@ -1415,6 +1535,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderFlowchart();
   buildSimSteps();
   setTimeout(initGSAP,100);
+  setTimeout(initMobilePanZoom,200);
+  setTimeout(updateSlideHeight,100);
   const nav=document.getElementById('mainNav');
   const hero=document.getElementById('hero');
   function checkNav(){
