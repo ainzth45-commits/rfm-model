@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RFM Model Phase 1 — Campaign Flowchart</title>
+<title>Campaign Phase 1 — Campaign Flowchart</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <style>
@@ -229,6 +229,9 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
 .sim-step-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .sim-step-num{font-family:var(--font-mono);font-size:11px;font-weight:700;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center}
 .sim-step-header span:last-child{font-family:var(--font-display);font-size:14px;font-weight:600;letter-spacing:-0.01em}
+.sim-unknown-btn{margin-left:auto;padding:4px 16px;border-radius:20px;border:1px solid var(--border-light);background:transparent;cursor:pointer;font-family:var(--font-body);font-size:11px;font-weight:400;color:var(--text-tertiary);transition:all 0.2s var(--ease-out);white-space:nowrap}
+.sim-unknown-btn:hover{border-color:var(--text-tertiary);color:var(--text-secondary);background:var(--bg-secondary)}
+.sim-unknown-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-light);font-weight:500}
 .sim-btn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .sim-btn-row{display:flex;gap:8px;flex-wrap:wrap}
 .sim-choice{padding:10px 14px;border-radius:10px;border:1.5px solid var(--border-light);background:var(--bg-primary);cursor:pointer;font-family:var(--font-body);font-size:12px;font-weight:500;color:var(--text-secondary);transition:all 0.2s var(--ease-out);text-align:center;line-height:1.35}
@@ -450,7 +453,7 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
 <div class="pw-gate" id="pwGate">
   <div class="pw-gate-glow"></div>
   <div class="pw-gate-box">
-    <div class="pw-gate-title">RFM Model</div>
+    <div class="pw-gate-title">Campaign</div>
     <div class="pw-gate-sub">กรุณาใส่รหัสผ่านเพื่อเข้าใช้งาน</div>
     <div class="pw-input-wrap">
       <input type="password" class="pw-input" id="pwInput" placeholder="Enter password" autocomplete="off" autofocus>
@@ -464,7 +467,7 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
 <canvas id="particleCanvas"></canvas>
 
 <nav class="nav" id="mainNav">
-  <a href="#" class="nav-brand" onclick="event.preventDefault();window.scrollTo({top:0,behavior:'smooth'})">RFM Model</a>
+  <a href="#" class="nav-brand" onclick="event.preventDefault();window.scrollTo({top:0,behavior:'smooth'})">Campaign</a>
   <div class="nav-links">
     <a href="#overview">Overview</a>
     <a href="#flowchart">Flowchart</a>
@@ -485,7 +488,7 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
 <section class="hero" id="hero">
   <div class="hero-glow"></div>
   <div class="hero-eyebrow">Campaign Classification System</div>
-  <h1 class="hero-title">RFM Model<br>Phase 1</h1>
+  <h1 class="hero-title">Campaign<br>Phase 1</h1>
   <p class="hero-subtitle">ระบบจัดแคมเปญลูกค้าอัตโนมัติ<br>วิเคราะห์พฤติกรรม จัดกลุ่มทุกสิ้นเดือน</p>
   <div class="hero-meta">
     <div class="hero-stat"><div class="hero-stat-value">6</div><div class="hero-stat-label">Groups</div></div>
@@ -547,7 +550,7 @@ body{font-family:var(--font-body);color:var(--text-primary);background:var(--bg-
 </section>
 
 <footer class="footer">
-  <p>RFM Model Phase 1 &mdash; Interactive Campaign Flowchart</p>
+  <p>Campaign Phase 1 &mdash; Interactive Campaign Flowchart</p>
 </footer>
 
 <script>
@@ -616,8 +619,8 @@ const GROUPS=[
   {id:0,name:'Raw',label:'กลุ่ม 0',campaigns:['ไม่มีแคมเปญ'],desc:'ลูกค้าใหม่ที่เพิ่งเข้าระบบ รอจัดแคมเปญรอบถัดไป'},
   {id:1,name:'New',label:'กลุ่ม 1',campaigns:['ลูกค้าใหม่'],desc:'ลูกค้าซื้อครั้งแรกผ่านช่องทางอื่น (ไม่ใช่ CRM)'},
   {id:2,name:'Relationship',label:'กลุ่ม 2',campaigns:['ส่วนตัว 1-2 เดือน','โอกาสสุดท้าย เดือนที่ 3'],desc:'ลูกค้าที่ซื้อผ่าน CRM และอยู่ในช่วงดูแลใกล้ชิด'},
-  {id:3,name:'Warm',label:'กลุ่ม 3',campaigns:['หาคนดูแลใหม่','รอคนมาจีบให้ติด'],desc:'ลูกค้าที่ยังมีโอกาส ต้องเร่งดึงกลับ'},
-  {id:4,name:'Cool',label:'กลุ่ม 4',campaigns:['ถังกลาง 6 เดือน-1 ปี'],desc:'ลูกค้าที่เริ่มเฉื่อยชา ต้องกระตุ้น'},
+  {id:3,name:'Good',label:'กลุ่ม 3',campaigns:['หาคนดูแลใหม่','รอคนมาจีบให้ติด'],desc:'ลูกค้าที่ยังมีโอกาส ต้องเร่งดึงกลับ'},
+  {id:4,name:'Not bad',label:'กลุ่ม 4',campaigns:['ถังกลาง 6 เดือน-1 ปี'],desc:'ลูกค้าที่เริ่มเฉื่อยชา ต้องกระตุ้น'},
   {id:5,name:'Excavate',label:'กลุ่ม 5',campaigns:['ถังกลาง 1-3 ปี','ถังโบราณ 3 ปี+'],desc:'ลูกค้าที่หายไปนาน ต้องขุดกลับ'},
 ];
 const NODES=[
@@ -625,9 +628,9 @@ const NODES=[
   {id:1,group:1,name:'ลูกค้าใหม่',sub:'New',x:70,y:240,conditions:'ผู้ขาย ≠ CRM, ซื้อครั้งแรก, วันรับสินค้า ≤ 30',detail:'ลูกค้าที่ซื้อครั้งแรก ผ่านช่องทางอื่นที่ไม่ใช่ CRM และรับสินค้าไม่เกิน 30 วัน'},
   {id:2,group:2,name:'ส่วนตัว 1-2 เดือน',sub:'Relationship',x:430,y:240,conditions:'ผู้ขาย = CRM, วันรับสินค้า ≤ 60',detail:'ลูกค้าที่ซื้อผ่าน CRM ภายใน 60 วัน ได้รับการดูแลส่วนตัว ทุกรอบที่ยังเข้าเงื่อนไข วันที่เข้ากลุ่มส่วนตัวจะถูก reset'},
   {id:3,group:2,name:'โอกาสสุดท้าย\nเดือนที่ 3',sub:'Relationship',x:430,y:460,conditions:'อยู่กลุ่ม 2, วันที่เข้ากลุ่มส่วนตัว 61-90 วัน',detail:'ลูกค้าที่อยู่ใน Relationship แต่ไม่ได้ซื้อจาก CRM อีก วันที่เข้ากลุ่มส่วนตัวเพิ่มจนเข้าช่วง 61-90 วัน นี่คือโอกาสสุดท้ายก่อนหลุดจากกลุ่ม'},
-  {id:4,group:3,name:'หาคนดูแลใหม่',sub:'Warm',x:430,y:680,conditions:'วันที่เข้ากลุ่มส่วนตัว > 90 หรือ ผู้ขาย=CRM, วันรับสินค้า≤180',detail:'ลูกค้าที่หลุดจาก Relationship (วันที่เข้ากลุ่มส่วนตัว>90) แต่ผู้ขายล่าสุดยังเป็น CRM ถ้าวันรับสินค้า>180 จะหลุดไปถังกลาง'},
-  {id:5,group:3,name:'รอคนมาจีบให้ติด',sub:'Warm',x:890,y:240,conditions:'วันรับสินค้า ≤ 180 (ที่เหลือ)',detail:'ลูกค้าที่ไม่เข้าเงื่อนไขกลุ่มอื่น แต่รับสินค้าไม่เกิน 180 วัน ยังมีโอกาสดึงกลับ'},
-  {id:6,group:4,name:'ถังกลาง\n6 เดือน-1 ปี',sub:'Cool',x:890,y:460,conditions:'วันรับสินค้า 181-365 วัน',detail:'ลูกค้าที่ไม่ได้ซื้อสินค้ามา 6 เดือนถึง 1 ปี ต้องการการกระตุ้นพิเศษ'},
+  {id:4,group:3,name:'หาคนดูแลใหม่',sub:'Good',x:430,y:680,conditions:'วันที่เข้ากลุ่มส่วนตัว > 90 หรือ ผู้ขาย=CRM, วันรับสินค้า≤180',detail:'ลูกค้าที่หลุดจาก Relationship (วันที่เข้ากลุ่มส่วนตัว>90) แต่ผู้ขายล่าสุดยังเป็น CRM ถ้าวันรับสินค้า>180 จะหลุดไปถังกลาง'},
+  {id:5,group:3,name:'รอคนมาจีบให้ติด',sub:'Good',x:890,y:240,conditions:'วันรับสินค้า ≤ 180 (ที่เหลือ)',detail:'ลูกค้าที่ไม่เข้าเงื่อนไขกลุ่มอื่น แต่รับสินค้าไม่เกิน 180 วัน ยังมีโอกาสดึงกลับ'},
+  {id:6,group:4,name:'ถังกลาง\n6 เดือน-1 ปี',sub:'Not bad',x:890,y:460,conditions:'วันรับสินค้า 181-365 วัน',detail:'ลูกค้าที่ไม่ได้ซื้อสินค้ามา 6 เดือนถึง 1 ปี ต้องการการกระตุ้นพิเศษ'},
   {id:7,group:5,name:'ถังกลาง\n1-3 ปี',sub:'Excavate',x:890,y:680,conditions:'วันรับสินค้า 366-1095 วัน',detail:'ลูกค้าที่หายไป 1-3 ปี ต้องใช้ความพยายามมากในการดึงกลับ'},
   {id:8,group:5,name:'ถังโบราณ\n3 ปีขึ้นไป',sub:'Excavate',x:890,y:890,conditions:'วันรับสินค้า > 1095 วัน',detail:'ลูกค้าที่หายไปมากกว่า 3 ปี อยู่ที่นี่ตลอดไปจนกว่าจะกลับมาซื้อ'},
 ];
@@ -1123,7 +1126,7 @@ function simLogic(current,S,N,R,T){
   }
   if(!result&&isNewcare){
     if(S==='CRM'&&R<=180)result={id:4,group:3};
-    else if(S!=='CRM')result={id:5,group:3};
+    else if(S!=='CRM'&&R<=180)result={id:5,group:3};
   }
   if(!result&&R<=180)result={id:5,group:3};
   if(!result&&R<=365)result={id:6,group:4};
@@ -1135,6 +1138,23 @@ function simLogic(current,S,N,R,T){
 function getPossibleResults(){
   const{current,S,N,R,T,TisNull}=simState;
   if(!current)return[];
+  if(current==='unknown'){
+    const ids=new Set();
+    const sVals=S?[S]:['CRM','OTHER'];
+    const nVals=N!==null?[N]:[1,2];
+    const rIdx=R!==null?R_OPTS.findIndex(o=>o.value===R):-1;
+    const tAll=TisNull===true?[null]:TisNull===false&&T!==null?[T]:[null,...T_OPTS.filter(o=>!o.isNull).map(o=>o.value)];
+    for(const camp of CAMPAIGNS){
+      const ck=camp.key;
+      const rEnabled=rRulesMap[ck]||[0,1,2,3,4,5];
+      if(R!==null&&!rEnabled.includes(rIdx))continue;
+      const rVals=R!==null?[R]:rEnabled.map(i=>R_OPTS[i].value);
+      const isRel=['personal','lastchance'].includes(ck);
+      const tVals=isRel?tAll:[null];
+      for(const s of sVals)for(const n of nVals)for(const r of rVals)for(const t of tVals)ids.add(simLogic(ck,s,n,r,t).id);
+    }
+    return[...ids];
+  }
   const sVals=S?[S]:['CRM','OTHER'];
   const nVals=N!==null?[N]:[1,2];
   const rEnabled=(rRulesMap[current]||[0,1,2,3,4,5]).map(i=>R_OPTS[i].value);
@@ -1161,6 +1181,26 @@ function buildSimSteps(){
   panel.innerHTML='';
   // Step 1
   const s1=makeStep(1,'แคมเปญปัจจุบัน');
+  const unknownBtn=document.createElement('button');
+  unknownBtn.className='sim-unknown-btn';
+  unknownBtn.textContent='ไม่รู้ว่าอยู่แคมเปญไหน';
+  unknownBtn.onclick=()=>{
+    document.querySelectorAll('.sim-choice[data-step="1"]').forEach(b=>b.classList.remove('selected'));
+    unknownBtn.classList.add('active');
+    simState.current='unknown';simState.S=simState.N=simState.R=simState.T=null;simState.TisNull=null;
+    document.querySelectorAll('.sim-choice:not([data-step="1"])').forEach(b=>{b.classList.remove('selected');b.classList.remove('disabled')});
+    const s2=document.getElementById('simStep2');
+    const s3=document.getElementById('simStep3');
+    const s4=document.getElementById('simStep4');
+    s2.classList.remove('hidden');s3.classList.remove('hidden');s4.classList.remove('hidden');
+    if(typeof gsap!=='undefined'){
+      gsap.from(s2,{y:20,opacity:0,duration:0.4,ease:'power2.out'});
+      gsap.from(s3,{y:20,opacity:0,duration:0.3,delay:0.1,ease:'power2.out'});
+      gsap.from(s4,{y:20,opacity:0,duration:0.3,delay:0.2,ease:'power2.out'});
+    }
+    updateDisabledStates();updateMiniFlow();
+  };
+  s1.querySelector('.sim-step-header').appendChild(unknownBtn);
   const g1=document.createElement('div');g1.className='sim-btn-grid';
   CAMPAIGNS.forEach(c=>{
     const btn=document.createElement('button');
@@ -1258,6 +1298,7 @@ function selectStep(field,value,btn,stepNum){
 
   // When changing campaign (step 1): clear all other selections + show/hide steps
   if(field==='current'){
+    const ub=document.querySelector('.sim-unknown-btn');if(ub)ub.classList.remove('active');
     simState.S=simState.N=simState.R=simState.T=null;simState.TisNull=null;
     document.querySelectorAll('.sim-choice:not([data-step="1"])').forEach(b=>{b.classList.remove('selected');b.classList.remove('disabled')});
     const s2=document.getElementById('simStep2');
@@ -1295,6 +1336,11 @@ function selectStep(field,value,btn,stepNum){
 function updateDisabledStates(){
   const{current}=simState;
   if(!current)return;
+  if(current==='unknown'){
+    document.querySelectorAll('.sim-choice[data-field="R"]').forEach(b=>b.classList.remove('disabled'));
+    document.querySelectorAll('.sim-choice[data-field="T"]').forEach(b=>b.classList.remove('disabled'));
+    return;
+  }
   const rEnabled=rRulesMap[current]||[0,1,2,3,4,5];
   const rBtns=document.querySelectorAll('.sim-choice[data-field="R"]');
   rBtns.forEach((btn,i)=>{
@@ -1338,6 +1384,7 @@ function updateDisabledStates(){
 function resetSim(){
   simState.current=simState.S=simState.N=simState.R=simState.T=null;simState.TisNull=null;
   document.querySelectorAll('.sim-choice').forEach(b=>{b.classList.remove('selected');b.classList.remove('disabled')});
+  const ub=document.querySelector('.sim-unknown-btn');if(ub)ub.classList.remove('active');
   ['simStep2','simStep3','simStep4'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden')});
   document.getElementById('simFlowEmpty').style.display='flex';
   document.getElementById('miniFlow').style.display='none';
@@ -1349,11 +1396,36 @@ function updateMiniFlow(){
   document.getElementById('simFlowEmpty').style.display='none';
   const flow=document.getElementById('miniFlow');flow.style.display='flex';
 
+  const possibles=getPossibleResults();
+
+  if(current==='unknown'){
+    const allNodeIds=[...new Set(NODES.map((_,i)=>i))].filter(i=>possibles.includes(i)||NODES[i]);
+    flow.innerHTML=`
+      <div class="mini-source" style="border-color:var(--text-tertiary);background:#f5f5f7;color:var(--text-secondary)">
+        <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">ไม่ทราบ</span>
+        แคมเปญปัจจุบัน?
+      </div>
+      <div class="mini-arrow"><div class="mini-arrow-line"></div><div class="mini-arrow-head">&#9660;</div></div>
+      <div class="mini-dests">
+        ${possibles.map(id=>{
+          const n=NODES[id];const g=n.group;
+          const c=GROUP_COLORS[g],l=GROUP_LIGHT[g],d=GROUP_DARK[g];
+          const isConfirmed=possibles.length===1;
+          return`<div class="mini-dest possible ${isConfirmed?'confirmed':''}" style="border-color:${c};background:${l};color:${d};--glow:${c}30">
+            <span style="font-family:var(--font-mono);font-size:9px;opacity:0.7;display:block;margin-bottom:2px">${GROUPS[g].name}</span>
+            ${n.name.replace(/\n/g,' ')}
+          </div>`;
+        }).join('')}
+      </div>
+      ${possibles.length===1?renderFinalResultUnknown(possibles[0]):'<div style="text-align:center;margin-top:16px;font-size:12px;color:var(--text-tertiary);font-family:var(--font-mono)">เลือกเพิ่มเพื่อจำกัดผลลัพธ์ (${possibles.length} แคมเปญที่เป็นไปได้)</div>'}
+    `;
+    return;
+  }
+
   const camp=CAMPAIGNS.find(c=>c.key===current);
   const sourceNode=NODES[camp.nodeId];
   const sourceColor=GROUP_COLORS[sourceNode.group],sourceLight=GROUP_LIGHT[sourceNode.group],sourceDark=GROUP_DARK[sourceNode.group];
 
-  const possibles=getPossibleResults();
   // Get all unique dest IDs from this source's outgoing connections
   const outConns=CONNECTIONS.filter(c=>c.from===camp.nodeId);
   const allDestIds=[...new Set(outConns.map(c=>c.to))];
@@ -1399,6 +1471,33 @@ function renderFinalResult(nodeId){
     <div class="mini-result-name" style="color:${d}">${n.name.replace(/\n/g,' ')}</div>
     <div class="mini-result-info">เงื่อนไข: ${n.conditions}</div>
     ${changeInfo?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid ${c}20;font-size:12px;color:${d};opacity:0.8;font-family:var(--font-mono)">${changeInfo}</div>`:''}
+  </div>
+  <div class="mini-result-steps">
+    <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">ขั้นตอนการจัดแคมเปญ</div>
+    ${steps.map((s,i)=>`<div class="mini-step-row">
+      <span class="mini-step-num">${i+1}</span>
+      <span class="mini-step-label">${s.label}</span>
+      <span class="mini-step-val">${s.val}</span>
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderFinalResultUnknown(nodeId){
+  const n=NODES[nodeId];const g=n.group;
+  const c=GROUP_COLORS[g],l=GROUP_LIGHT[g],d=GROUP_DARK[g];
+  const grp=GROUPS[g];
+  const S=simState.S||'—',N=simState.N,R=simState.R,T=simState.T;
+  const steps=[];
+  steps.push({label:'แคมเปญปัจจุบัน',val:'ไม่ทราบ'});
+  steps.push({label:'ผู้ขายล่าสุด (S)',val:S});
+  steps.push({label:'ครั้งที่สั่งซื้อ (N)',val:N===1?'ครั้งแรก':N===2?'ครั้งที่ 2+':'—'});
+  steps.push({label:'วันนับจากรับสินค้า (R)',val:R!==null?R+' วัน':'—'});
+  if(T!==null&&T!==undefined)steps.push({label:'วันในกลุ่ม Relationship (T)',val:T+' วัน'});
+  else steps.push({label:'วันในกลุ่ม Relationship (T)',val:'ไม่มี'});
+  return`<div class="mini-result-card" style="background:${l};border:2px solid ${c}25">
+    <div class="mini-result-label" style="color:${d}">${grp.label} — ${grp.name}</div>
+    <div class="mini-result-name" style="color:${d}">${n.name.replace(/\n/g,' ')}</div>
+    <div class="mini-result-info">เงื่อนไข: ${n.conditions}</div>
   </div>
   <div class="mini-result-steps">
     <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">ขั้นตอนการจัดแคมเปญ</div>
