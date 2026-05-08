@@ -1178,12 +1178,14 @@ function getPossibleResults(){
     const nVals=N!==null?[N]:[1,2];
     const rIdx=R!==null?R_OPTS.findIndex(o=>o.value===R):-1;
     const tAll=TisNull===true?[null]:TisNull===false&&T!==null?[T]:[null,...T_OPTS.filter(o=>!o.isNull).map(o=>o.value)];
+    const hasTSelected=TisNull===false&&T!==null;
     for(const camp of CAMPAIGNS){
       const ck=camp.key;
+      const isRel=['personal','lastchance'].includes(ck);
+      if(isRel&&!hasTSelected)continue;
       const rEnabled=rRulesMap[ck]||[0,1,2,3,4,5];
       if(R!==null&&!rEnabled.includes(rIdx))continue;
       const rVals=R!==null?[R]:rEnabled.map(i=>R_OPTS[i].value);
-      const isRel=['personal','lastchance'].includes(ck);
       const tVals=isRel?tAll:[null];
       for(const s of sVals)for(const n of nVals)for(const r of rVals)for(const t of tVals)ids.add(simLogic(ck,s,n,r,t).id);
     }
@@ -1425,7 +1427,7 @@ function updateDisabledStates(){
 }
 
 function selectSuggestedCampaign(campKey){
-  simState.suggestedCamp=campKey;
+  simState.suggestedCamp=simState.suggestedCamp===campKey?null:campKey;
   updateMiniFlow();
 }
 
