@@ -1,20 +1,22 @@
-# RFM Model Phase 1 — สรุประบบและลอจิกแคมเปญ
+# Campaign Management — สรุประบบและลอจิกแคมเปญ
 
-> เอกสารสรุปทั้งหมดของเว็บ RFM Model Flowchart
-> อัปเดตล่าสุด: 2026-05-07
+> เอกสารสรุปทั้งหมดของเว็บ Campaign Management System
+> อัปเดตล่าสุด: 2026-05-14
 
 ---
 
 ## 1. ภาพรวมระบบ
 
-เว็บ **RFM Model Phase 1** เป็นเครื่องมือจำแนกลูกค้าเข้าแคมเปญอัตโนมัติ โดยระบบจะ **จัดแคมเปญทุกสิ้นเดือน** ดึงรายชื่อลูกค้าทั้งหมดมาตรวจสอบเงื่อนไขทีละขั้นตอน ลูกค้าแต่ละคนจะถูกจัดเข้า **1 แคมเปญเท่านั้น** ต่อรอบ
+เว็บ **Campaign Management** เป็นเครื่องมือจำแนกลูกค้าเข้าแคมเปญอัตโนมัติ โดยระบบจะ **จัดแคมเปญทุกสิ้นเดือน** ดึงรายชื่อลูกค้าทั้งหมดมาตรวจสอบเงื่อนไขทีละขั้นตอน ลูกค้าแต่ละคนจะถูกจัดเข้า **1 แคมเปญเท่านั้น** ต่อรอบ
 
 ### เทคโนโลยี
-- Single HTML file (embedded CSS + JS) — ไม่มี external framework
+- Multi-file architecture: HTML + CSS + 5 JS files (ไม่ใช่ ES modules, ใช้ `<script src>` เพื่อรองรับ file://)
 - GSAP 3.12.5 + ScrollTrigger (CDN) — scroll animation
+- SheetJS (XLSX) 0.20.3 (CDN) — Excel import/export
 - SVG — flowchart connections + arrowheads (27 เส้น)
 - Canvas — particle background (30 อนุภาค 6 สี)
 - Web Crypto API — SHA-256 password hashing
+- Google Fonts — Sarabun (สำหรับตัวเลข)
 - Responsive Design — รองรับ Desktop, Tablet, Mobile
 
 ### Hosting
@@ -64,8 +66,8 @@
 | **0** | Raw | กลุ่ม 0 | ไม่มีแคมเปญ | ลูกค้าใหม่ที่เพิ่งเข้าระบบ รอจัดแคมเปญรอบถัดไป |
 | **1** | New | กลุ่ม 1 | ลูกค้าใหม่ | ลูกค้าซื้อครั้งแรกผ่านช่องทางอื่น (ไม่ใช่ CRM) |
 | **2** | Relationship | กลุ่ม 2 | ส่วนตัว 1-2 เดือน, โอกาสสุดท้าย เดือนที่ 3 | ลูกค้าที่ซื้อผ่าน CRM และอยู่ในช่วงดูแลใกล้ชิด |
-| **3** | Warm | กลุ่ม 3 | หาคนดูแลใหม่, รอคนมาจีบให้ติด | ลูกค้าที่ยังมีโอกาส ต้องเร่งดึงกลับ |
-| **4** | Cool | กลุ่ม 4 | ถังกลาง 6 เดือน-1 ปี | ลูกค้าที่เริ่มเฉื่อยชา ต้องกระตุ้น |
+| **3** | Good | กลุ่ม 3 | หาคนดูแลใหม่, รอคนมาจีบให้ติด | ลูกค้าที่ยังมีโอกาส ต้องเร่งดึงกลับ |
+| **4** | Not bad | กลุ่ม 4 | ถังกลาง 6 เดือน-1 ปี | ลูกค้าที่เริ่มเฉื่อยชา ต้องกระตุ้น |
 | **5** | Excavate | กลุ่ม 5 | ถังกลาง 1-3 ปี, ถังโบราณ 3 ปี+ | ลูกค้าที่หายไปนาน ต้องขุดกลับ |
 
 ---
@@ -124,7 +126,7 @@
   - ซื้อ CRM ภายใน 60 วัน → กลับไปส่วนตัว (reset T) (น้ำเงิน)
   - ไม่ซื้อ CRM จนเกิน 90 วัน → หาคนดูแลใหม่ (เทา)
 
-#### 5. หาคนดูแลใหม่ (กลุ่ม 3 — Warm)
+#### 5. หาคนดูแลใหม่ (กลุ่ม 3 — Good)
 - **Node ID:** 4
 - **ตำแหน่ง Flowchart:** x:430, y:680
 - **เงื่อนไข Node:** T > 90 หรือ S=CRM, R≤180
@@ -137,7 +139,7 @@
   - ซื้อช่องทางอื่น → รอคนมาจีบ (ส้ม)
   - ไม่ซื้อจนเกิน 180 วัน → ถังกลาง (เทา)
 
-#### 6. รอคนมาจีบให้ติด (กลุ่ม 3 — Warm)
+#### 6. รอคนมาจีบให้ติด (กลุ่ม 3 — Good)
 - **Node ID:** 5
 - **ตำแหน่ง Flowchart:** x:890, y:240
 - **เงื่อนไข Node:** R ≤ 180 (ที่เหลือ)
@@ -150,7 +152,7 @@
   - ซื้อช่องทางอื่น → อยู่เดิม (R reset) (ส้ม)
   - ไม่ซื้อเกิน 180 วัน → ถังกลาง (เทา)
 
-#### 7. ถังกลาง 6 เดือน-1 ปี (กลุ่ม 4 — Cool)
+#### 7. ถังกลาง 6 เดือน-1 ปี (กลุ่ม 4 — Not bad)
 - **Node ID:** 6
 - **ตำแหน่ง Flowchart:** x:890, y:460
 - **เงื่อนไข Node:** R 181-365 วัน
@@ -297,14 +299,14 @@ function simLogic(current, S, N, R, T) {
 | 11 | ซื้อ OTHER | Node 4 หาคนดูแล | S→OTHER, T>90 → หาคนดูแล | — |
 | 12 | ไม่ซื้อ | Node 4 หาคนดูแล | R เพิ่ม, T>90 → หาคนดูแล | dup |
 
-#### Node 4: หาคนดูแลใหม่ (Warm) — 3 เส้น
+#### Node 4: หาคนดูแลใหม่ (Good) — 3 เส้น
 | # | ประเภท | ปลายทาง | เงื่อนไข | พิเศษ |
 |---|--------|---------|---------|-------|
 | 13 | ซื้อ CRM | Node 2 ส่วนตัว | S→CRM, R≤60 → Relationship | — |
 | 14 | ซื้อ OTHER | Node 5 รอคนมาจีบ | S→OTHER, ลบ T → รอจีบ | — |
 | 15 | ไม่ซื้อ | Node 6 ถังกลาง | R เพิ่ม, R>180 → ถังกลาง | — |
 
-#### Node 5: รอคนมาจีบให้ติด (Warm) — 4 เส้น
+#### Node 5: รอคนมาจีบให้ติด (Good) — 4 เส้น
 | # | ประเภท | ปลายทาง | เงื่อนไข | พิเศษ |
 |---|--------|---------|---------|-------|
 | 16 | ซื้อ CRM | Node 2 ส่วนตัว | S→CRM, R≤60 → Relationship | — |
@@ -312,7 +314,7 @@ function simLogic(current, S, N, R, T) {
 | 18 | ไม่ซื้อ R≤180 | Node 5 (ตัวเอง) | R≤180 → อยู่เดิม | self-loop, dup |
 | 19 | ไม่ซื้อ R>180 | Node 6 ถังกลาง | R>180 → ถังกลาง | — |
 
-#### Node 6: ถังกลาง 6ด-1ปี (Cool) — 3 เส้น
+#### Node 6: ถังกลาง 6ด-1ปี (Not bad) — 3 เส้น
 | # | ประเภท | ปลายทาง | เงื่อนไข | พิเศษ |
 |---|--------|---------|---------|-------|
 | 20 | ซื้อ CRM | Node 2 ส่วนตัว | S→CRM, R≤60 → Relationship | — |
@@ -353,28 +355,28 @@ function simLogic(current, S, N, R, T) {
 | แคมเปญ (key) | R indexes ที่กดได้ | ค่า R |
 |--------------|-------------------|-------|
 | raw | [0] | ≤30 เท่านั้น |
-| new | [0,1,2] | ≤30, 31-60, 61-180 |
+| new | [0,1] | ≤30, 31-60 |
 | personal | [0,1,2] | ≤30, 31-60, 61-180 |
 | lastchance | [0,1,2] | ≤30, 31-60, 61-180 |
 | newcare | [0,1,2,3] | ≤30, 31-60, 61-180, 181-365 |
 | waiting | [0,1,2,3] | ≤30, 31-60, 61-180, 181-365 |
-| cool | [0,1,2,3,4] | ≤30, 31-60, 61-180, 181-365, 366-1095 |
-| excavate1 | [0,1,2,4] | ≤30, 31-60, 61-180, 366-1095 |
-| excavate2 | [0,1,2,5] | ≤30, 31-60, 61-180, 1096+ |
+| notbad | [0,3,4] | ≤30, 181-365, 366-1095 |
+| excavate1 | [0,4] | ≤30, 366-1095 |
+| excavate2 | [0,5] | ≤30, 1096+ |
 
 ### ตาราง R — ปุ่มที่กดได้
 
 | ปุ่ม | ≤30 | 31-60 | 61-180 | 181-365 | 366-1095 | 1096+ |
 |------|:---:|:-----:|:------:|:-------:|:--------:|:-----:|
 | ไม่มีแคมเปญ | O | - | - | - | - | - |
-| ลูกค้าใหม่ | O | O | O | - | - | - |
+| ลูกค้าใหม่ | O | O | - | - | - | - |
 | ส่วนตัว | O | O | O | - | - | - |
 | โอกาสสุดท้าย | O | O | O | - | - | - |
 | หาคนดูแลใหม่ | O | O | O | O | - | - |
 | รอคนมาจีบ | O | O | O | O | - | - |
-| ถังกลาง 6ด-1ปี | O | O | O | O | O | - |
-| ถังกลาง 1-3ปี | O | O | O | - | O | - |
-| ถังโบราณ 3ปี+ | O | O | O | - | - | O |
+| ถังกลาง 6ด-1ปี | O | - | - | O | O | - |
+| ถังกลาง 1-3ปี | O | - | - | - | O | - |
+| ถังโบราณ 3ปี+ | O | - | - | - | - | O |
 
 ### T — ปุ่มที่กดได้ (เฉพาะ Relationship)
 
@@ -412,8 +414,8 @@ function simLogic(current, S, N, R, T) {
 |---|---------|-----------|-------------------|-----------|
 | 1 | **Hero** | #000 (ดำ + glow) | 128px 80px 96px | ชื่อระบบ + สถิติ 6/9/4 + scroll indicator |
 | 2 | **Overview** | #F5F5F7 (bg-secondary) | 48px 0 96px | Carousel 10 หน้า: กลุ่ม + 9 แคมเปญ |
-| 3 | **Flowchart** | gradient ขาว→#FAFBFE | 96px 40px 80px | State machine 9 nodes + 27 เส้น SVG |
-| 4 | **Simulator** | #F5F5F7 (bg-secondary) | 96px 80px | 2-column: ปุ่มเลือก + mini flowchart |
+| 3 | **Campaign Flow** | gradient ขาว→#FAFBFE | 96px 40px 80px | รวม State Machine + Simulator ด้วย mode switcher |
+| 4 | **Management** | #FFFFFF | 96px 80px | Excel import/export, 2 mode: ตรวจสอบ/จัดแคมเปญใหม่ + Sale Plan |
 | 5 | **Footer** | #FFFFFF | 48px 80px | ข้อความเดียว |
 
 ### Overview Carousel — โครงสร้าง
@@ -514,8 +516,8 @@ function simLogic(current, S, N, R, T) {
 | 0 Raw | Slate | #8E8E93 | #F2F2F4 | #636366 |
 | 1 New | Emerald | #28A745 | #EBF7EE | #1E7E34 |
 | 2 Relationship | Sapphire | #007AFF | #E5F1FF | #0055B3 |
-| 3 Warm | Amber | #E8850C | #FEF3E2 | #A65E08 |
-| 4 Cool | Indigo | #5856D6 | #EEEEF9 | #3634A3 |
+| 3 Good | Amber | #E8850C | #FEF3E2 | #A65E08 |
+| 4 Not bad | Indigo | #5856D6 | #EEEEF9 | #3634A3 |
 | 5 Excavate | Rose | #D64045 | #FDECEC | #A8282D |
 
 #### Base Colors
@@ -605,10 +607,30 @@ function simLogic(current, S, N, R, T) {
 
 ## 12. ไฟล์ในโปรเจค
 
-| ไฟล์ | รายละเอียด |
-|------|-----------|
-| `index.html` | ไฟล์หลักสำหรับ GitHub Pages (เหมือน RFM Model-1.html) |
-| `RFM Model-1.html` | ไฟล์ต้นฉบับ (working copy) |
-| `DESIGN_SPEC.md` | Design specification — typography, colors, spacing |
-| `RFM_SUMMARY.md` | เอกสารสรุปนี้ |
-| `.gitignore` | ไม่ push: .DS_Store, .claude/, backup_*, TASK.md |
+### โครงสร้าง Multi-file Architecture
+
+```
+/
+├── index.html              ← HTML หลัก + password gate + SVG sprites
+├── css/
+│   └── styles.css          ← CSS ทั้งหมด + password gate CSS
+├── js/
+│   ├── campaign-logic.js   ← ข้อมูลกลุ่ม/แคมเปญ, rRulesMap, simLogic()
+│   ├── flowchart.js        ← SVG flowchart rendering, spotlight, popup
+│   ├── simulator.js        ← Simulator UI 4 ขั้นตอน, unknown mode
+│   ├── management.js       ← Excel import/export, check/assign mode, sale plan
+│   └── app.js              ← Nav, carousel, particles, GSAP, password gate JS
+├── DESIGN_SPEC.md          ← Design specification — typography, colors, spacing
+├── RFM_SUMMARY.md          ← เอกสารสรุปนี้
+└── .gitignore              ← ไม่ push: .DS_Store, .claude/, backup_*, TASK.md, campaign-management/, test*.xlsx
+```
+
+### ลำดับการโหลด Script (สำคัญ — ไม่ใช่ ES modules)
+
+ใช้ `<script src>` โหลดตามลำดับ เพราะต้องรองรับ `file://` protocol:
+
+1. **campaign-logic.js** — ประกาศ globals (GROUPS, NODES, CAMPAIGNS, rRulesMap, simLogic ฯลฯ)
+2. **flowchart.js** — ใช้ globals จาก campaign-logic.js
+3. **simulator.js** — ใช้ globals จาก campaign-logic.js
+4. **management.js** — ใช้ globals จาก campaign-logic.js
+5. **app.js** — orchestrator, init ทุกอย่าง + password gate

@@ -23,6 +23,9 @@ Thai requires careful font selection. On macOS, the system Thai font (Thonburi /
 /* Mono — For values, numbers, variable names (R, S, N, T) */
 --font-mono: "SF Mono", ui-monospace, "Cascadia Code", 
              "Segoe UI Mono", Menlo, monospace;
+
+/* Numeric — For number display (stats, counts) */
+--font-num: "Sarabun", sans-serif;  /* Google Fonts — weight 700 */
 ```
 
 **Why this works:**
@@ -127,7 +130,7 @@ Designed as a **gradient spectrum** — moving from neutral (Raw) through vitali
 --group-2-glow:    rgba(0, 122, 255, 0.25);
 ```
 
-#### Group 3: Warm — *"Amber Signal"*
+#### Group 3: Good — *"Amber Signal"*
 ```css
 --group-3:         #E8850C;      /* Primary — warmth, opportunity, attention */
 --group-3-light:   #FEF3E2;      /* Card/node background */
@@ -135,7 +138,7 @@ Designed as a **gradient spectrum** — moving from neutral (Raw) through vitali
 --group-3-glow:    rgba(232, 133, 12, 0.25);
 ```
 
-#### Group 4: Cool — *"Dusk Indigo"*
+#### Group 4: Not bad — *"Dusk Indigo"*
 ```css
 --group-4:         #5856D6;      /* Primary — cooling, fading, needs energy */
 --group-4-light:   #EEEEF9;      /* Card/node background */
